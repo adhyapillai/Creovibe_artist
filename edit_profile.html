@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile - CreoVibe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+    :root {
+      --primary: #667eea;
+      --accent:  #764ba2;
+      --bg: #F5F7FF;
+      --card: #ffffff;
+      --border: #e1e4eb;
+      --text-muted: #777;
+      --sidebar-w: 260px;
+      --sidebar-w-sm: 60px;
+      --topnav-h: 70px;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: var(--bg);
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 55%, #5c3691 100%);
+      transition: width 0.25s ease;
+      z-index: 999;
+      overflow: hidden;
+      box-shadow: 4px 0 20px rgba(102,126,234,.35);
+    }
+
+    .sidebar.collapsed {
+      width: var(--sidebar-w-sm);
+    }
+
+    .sidebar-logo-block {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .sidebar-logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      border: 2px solid rgba(255,255,255,.50);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      font-family: "Monotype Corsiva", cursive;
+    }
+
+    .sidebar.collapsed .logo-text {
+      display: none;
+    }
+
+    .sidebar.collapsed .logo-row {
+      justify-content: center;
+    }
+
+    .sidebar.collapsed .sidebar-logo {
+      width: 44px;
+      height: 44px;
+    }
+
+    /* MENU */
+    .sidebar-menu {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .menu-item {
+      padding: 13px 12.5px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 15px;
+      cursor: pointer;
+      color: rgba(255,255,255,.80);
+      transition: 0.2s ease;
+      text-decoration: none;
+    }
+
+    .menu-item:hover {
+      background: rgba(255,255,255,.18);
+      color: #ffffff;
+    }
+
+    .menu-item.active {
+      background: rgba(255,255,255,.25);
+      color: #ffffff;
+      font-weight: 600;
+      border-left: 3px solid #ffffff;
+    }
+
+    .menu-item i {
+      font-size: 22px;
+      min-width: 22px;
+      text-align: center;
+    }
+
+    .sidebar.collapsed .menu-item span {
+      display: none;
+    }
+
+    .sidebar.collapsed .menu-item {
+      justify-content: center;
+    }
+
+    /* TOP NAVBAR */
+    .topnav {
+      position: fixed;
+      left: var(--sidebar-w);
+      top: 0;
+      height: var(--topnav-h);
+      width: calc(100% - var(--sidebar-w));
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      gap: 8px;
+      z-index: 998;
+      transition: left 0.25s ease, width 0.25s ease;
+      box-shadow: 0 3px 14px rgba(102,126,234,.30);
+    }
+
+    .sidebar.collapsed ~ .topnav {
+      left: var(--sidebar-w-sm);
+      width: calc(100% - var(--sidebar-w-sm));
+    }
+
+    .nav-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.35);
+      font-size: 22px;
+      color: #ffffff;
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .nav-icon:hover {
+      background: rgba(255,255,255,.30);
+    }
+
+    .user-profile {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px 5px 6px;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .user-profile:hover {
+      background: rgba(255,255,255,.18);
+    }
+
+    .profile-pic {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.30);
+      border: 2px solid rgba(255,255,255,.60);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .profile-dropdown-arrow {
+      color: rgba(255,255,255,.85);
+      font-size: 18px;
+      transition: transform .3s;
+      line-height: 1;
+    }
+
+    .user-profile:hover .profile-dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e1e4eb;
+      box-shadow: 0 8px 30px rgba(0,0,0,.13);
+      min-width: 190px;
+      display: none;
+      z-index: 1050;
+      overflow: hidden;
+    }
+
+    .profile-dropdown.show {
+      display: block;
+      animation: fadeIn .18s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .dropdown-item {
+      padding: 11px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #4a5568;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-item:hover      { background: #f5f7fa; color: var(--primary); }
+    .dropdown-item.logout     { color: #e74c3c; }
+    .dropdown-item.logout:hover { background: #fef2f2; color: #c0392b; }
+
+    /* MAIN CONTENT */
+    .dashboard {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--topnav-h);
+      padding: 28px 30px 48px;
+      transition: margin-left 0.25s ease;
+      min-height: calc(100vh - var(--topnav-h));
+    }
+
+    .sidebar.collapsed ~ .topnav + .dashboard { margin-left: var(--sidebar-w-sm); }
+
+
+
+        /* FORM STYLES */
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1e4eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: 0.3s;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1e4eb;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(74, 108, 247, 0.2);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* LOADING */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        .privacy-note {
+            background: #F5F7FF;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #666;
+            border-left: 4px solid #667eea;
+        }
+
+        .privacy-note i {
+            color: #667eea;
+            margin-right: 8px;
+        }
+    
+</style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo-block">
+            <div class="logo-row">
+                <div class="sidebar-logo" id="sidebarLogo">CV</div>
+                <span class="logo-text">CreoVibe</span>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item menu-toggle"><i class="ri-menu-line" id="menuBtn"></i><span>Menu</span></li>
+            <a href="dashboard.html" class="menu-item">
+                <i class="ri-dashboard-line"></i><span>Dashboard</span>
+            </a>
+            <a href="profile.html" class="menu-item active">
+                <i class="ri-user-line"></i><span>Profile</span>
+            </a>
+            <a href="subscription.html" class="menu-item">
+                <i class="ri-vip-crown-line"></i><span>Subscription</span>
+            </a>
+            <a href="calendar_view.html" class="menu-item">
+                <i class="ri-calendar-line"></i><span>Calendar</span>
+            </a>
+            <a href="booking_details.html" class="menu-item">
+                <i class="ri-calendar-check-line"></i><span>Bookings</span>
+            </a>
+            <a href="earnings.html" class="menu-item">
+                <i class="ri-wallet-3-line"></i><span>Earnings</span>
+            </a>
+            <a href="notifications.html" class="menu-item">
+                <i class="ri-notification-3-line"></i><span>Notifications</span>
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="ri-chat-3-line"></i><span>Feedback</span>
+            </a>
+
+        </ul>
+    </div>
+
+    <!-- TOP NAVBAR -->
+    <div class="topnav">
+        <span class="topnav-page-title" style="color:#fff;font-size:20px;font-weight:600;margin-left:8px;">Edit Profile</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+        <span class="notif-bell-wrap">
+            <a href="notifications.html" class="nav-icon" id="notifBell">
+                <i class="ri-notification-3-line"></i>
+            </a>
+            <span class="notif-count-badge" id="notifCountBadge" style="display:none;">0</span>
+        </span>
+
+        <!-- User Profile Dropdown -->
+        <div class="user-profile" id="userProfile">
+            <div class="profile-pic" id="navProfilePic"></div>
+
+            <div class="profile-dropdown" id="profileDropdown">
+                <a href="profile.html" class="dropdown-item">
+                    <i class="ri-user-line"></i> My Profile
+                </a>
+                <a href="#" class="dropdown-item logout" id="logoutBtn">
+                    <i class="ri-logout-box-r-line"></i> Logout
+                </a>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- EDIT PROFILE CONTENT -->
+    <div class="dashboard">
+        <h2>Edit Profile</h2>
+        <div class="text-muted" id="welcomeText">Update your profile information</div>
+
+        <div class="spinner" id="loadingSpinner"></div>
+
+        <div id="formContent" class="hidden">
+            <div class="alert" id="messageAlert"></div>
+
+            <div class="privacy-note">
+                <i class="ri-shield-check-line"></i>
+                <strong>Privacy Note:</strong> Your email and phone number are private and not visible to clients.
+            </div>
+
+            <form id="editProfileForm">
+                <!-- Personal Information -->
+                <div class="form-card">
+                    <h3 style="margin-top: 0; margin-bottom: 25px; color: #333;">Personal Information</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Gender *</label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Date of Birth *</label>
+                            <input type="date" class="form-control" id="dob" name="dob" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Profile Picture</label>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="profile-pic" id="profilePicFallback">JD</div>
+                                <img id="profilePicPreview" alt="Profile Picture"
+                                    style="width: 46px; height: 46px; border-radius: 50%; display: none; object-fit: cover;">
+                                <input type="file" class="form-control" id="profile_picture" name="profile_picture"
+                                    accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="form-card">
+                    <h3 style="margin-top: 0; margin-bottom: 25px; color: #333;">Contact Information</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email" readonly
+                                style="background: #f8f9fa;">
+                            <small style="color: #666; font-size: 13px; margin-top: 5px; display: block;">
+                                <i class="ri-shield-line"></i> Email cannot be changed for security reasons
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" required>
+                            <small style="color: #666; font-size: 13px; margin-top: 5px; display: block;">
+                                <i class="ri-shield-line"></i> Private - not visible to clients
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Information -->
+                <div class="form-card">
+                    <h3 style="margin-top: 0; margin-bottom: 25px; color: #333;">Professional Information</h3>
+
+                    <div class="form-group">
+                        <label class="form-label">Category *</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Singer">Singer</option>
+                            <option value="Dancer">Dancer</option>
+                            <option value="Photographer">Photographer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Experience (Years)</label>
+                            <input type="number" class="form-control" id="experience_years" name="experience_years" min="0" max="60" placeholder="e.g. 5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Price Per Hour (₹)</label>
+                            <input type="number" class="form-control" id="price_per_hour" name="price_per_hour" min="0" placeholder="e.g. 1500">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Working Start Time</label>
+                            <input type="time" class="form-control" id="working_start_time" name="working_start_time">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Working End Time</label>
+                            <input type="time" class="form-control" id="working_end_time" name="working_end_time">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Information -->
+                <div class="form-card">
+                    <h3 style="margin-top: 0; margin-bottom: 25px; color: #333;">Location Information</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">State *</label>
+                            <select class="form-select" id="state_id" name="state_id" required
+                                onchange="handleStateChange(this.value)">
+                                <option value="">Select State</option>
+                                <!-- States loaded by JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">City *</label>
+                            <select class="form-select" id="city_id" name="city_id" required disabled>
+                                <option value="">Select City</option>
+                                <!-- Cities loaded by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Pincode *</label>
+                        <input type="text" class="form-control" id="pincode" name="pincode" pattern="[0-9]{6}" required
+                            maxlength="6">
+                    </div>
+                </div>
+
+                <!-- Bank Details -->
+                <div class="form-card">
+                    <h3 style="margin-top: 0; margin-bottom: 25px; color: #333;">Bank Details</h3>
+                    <small style="color: #666; font-size: 13px; display: block; margin-bottom: 18px;">
+                        <i class="ri-shield-lock-line"></i> Your bank details are private and used only for payouts.
+                    </small>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Bank Name</label>
+                            <input type="text" class="form-control" id="bank_name" name="bank_name" placeholder="e.g. State Bank of India">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Account Holder Name</label>
+                            <input type="text" class="form-control" id="account_holder_name" name="account_holder_name" placeholder="Name as on bank account">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Bank Account Number</label>
+                            <input type="text" class="form-control" id="bank_account_number" name="bank_account_number" placeholder="Account number">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">IFSC Code</label>
+                            <input type="text" class="form-control" id="ifsc_code" name="ifsc_code" placeholder="e.g. SBIN0001234" maxlength="11" style="text-transform:uppercase;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">UPI ID</label>
+                        <input type="text" class="form-control" id="upi_id" name="upi_id" placeholder="e.g. name@upi">
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <h3 style="margin-top: 0; margin-bottom: 25px; color: #333;">Portfolio</h3>
+                    <div id="portfolioList"></div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label class="form-label">Add Portfolio Files</label>
+                        <input type="file" class="form-control" id="portfolio_new_files" name="portfolio_new_files"
+                            multiple accept=".jpg,.jpeg,.png,.mp4,image/jpeg,image/png,video/mp4">
+                        <small style="color: #666; font-size: 13px; margin-top: 5px; display: block;">
+                            Allowed: jpg, jpeg, png, mp4. Minimum 3 and maximum 10 files total.
+                        </small>
+                        <div id="portfolioInlineError"
+                            style="display:none; margin-top:8px; color:#dc3545; font-size:13px; font-weight:600;"></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ri-save-line"></i> Save Changes
+                    </button>
+                    <a href="profile.html" class="btn btn-secondary">
+                        <i class="ri-close-line"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div id="errorContainer" class="hidden"></div>
+    </div>
+
+    <script>
+        // ==================== COMMON FUNCTIONS ====================
+        async function checkLogin() {
+            try {
+                const response = await fetch('/api/check_session');
+                const data = await response.json();
+
+                if (!data.logged_in) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return false;
+                }
+
+                if (!localStorage.getItem('artist_id')) {
+                    localStorage.setItem('artist_id', data.artist_id);
+                }
+
+                return true;
+            } catch (error) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return false;
+            }
+        }
+
+        function initSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menuBtn');
+
+            if (menuBtn && sidebar) {
+                menuBtn.onclick = () => {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                };
+
+                if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
+            }
+        }
+
+        function initProfileDropdown() {
+            const userProfile = document.getElementById('userProfile');
+            const dropdown = document.getElementById('profileDropdown');
+
+            if (userProfile && dropdown) {
+                userProfile.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('show');
+                });
+
+                document.addEventListener('click', function () {
+                    dropdown.classList.remove('show');
+                });
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        function setupLogout() {
+            document.getElementById('logoutBtn').addEventListener('click', function (e) {
+                e.preventDefault();
+                logout();
+            });
+        }
+
+        function formatDateForInput(dateValue) {
+            if (!dateValue) return '';
+            const d = new Date(dateValue);
+            if (Number.isNaN(d.getTime())) {
+                return String(dateValue).split('T')[0];
+            }
+            return d.toISOString().split('T')[0];
+        }
+
+        let existingPortfolioFiles = [];
+        const removedPortfolioIndexes = new Set();
+        const replacementPortfolioFiles = {};
+
+        function isValidPortfolioFile(file) {
+            const name = (file.name || '').toLowerCase();
+            return name.endsWith('.jpg') || name.endsWith('.jpeg') || name.endsWith('.png') || name.endsWith('.mp4');
+        }
+
+        function renderPortfolioList() {
+            const list = document.getElementById('portfolioList');
+            if (!list) return;
+
+            if (!existingPortfolioFiles.length) {
+                list.innerHTML = '<small style="color: #666;">No existing portfolio files found.</small>';
+                return;
+            }
+
+            let html = '';
+            existingPortfolioFiles.forEach((filePath, index) => {
+                const removed = removedPortfolioIndexes.has(index);
+                const isVideo = String(filePath).toLowerCase().endsWith('.mp4');
+                const replaced = !!replacementPortfolioFiles[index];
+
+                html += `
+            <div style="border: 1px solid #eee; border-radius: 8px; padding: 10px; margin-bottom: 10px; ${removed ? 'opacity: 0.55;' : ''}">
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    ${isVideo
+                        ? `<video src="${filePath}" controls style="width: 110px; height: 80px; object-fit: cover; border-radius: 6px;"></video>`
+                        : `<img src="${filePath}" alt="Portfolio file" style="width: 110px; height: 80px; object-fit: cover; border-radius: 6px;">`
+                    }
+                    <div style="flex: 1; min-width: 220px;">
+                        <div style="font-size: 13px; color: #333; word-break: break-all;">${filePath}</div>
+                        <div style="margin-top: 8px;">
+                            <button type="button" class="btn btn-secondary" onclick="togglePortfolioRemove(${index})">
+                                ${removed ? 'Undo Remove' : 'Remove'}
+                            </button>
+                            <label class="btn btn-secondary" style="margin-left: 8px;">
+                                Replace
+                                <input type="file" accept=".jpg,.jpeg,.png,.mp4,image/jpeg,image/png,video/mp4" style="display:none;" onchange="setPortfolioReplacement(${index}, this)">
+                            </label>
+                            ${replaced ? '<small style="color:#28a745; margin-left:8px;">Replacement selected</small>' : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+            });
+
+            list.innerHTML = html;
+        }
+
+        function togglePortfolioRemove(index) {
+            if (removedPortfolioIndexes.has(index)) {
+                removedPortfolioIndexes.delete(index);
+            } else {
+                removedPortfolioIndexes.add(index);
+            }
+            renderPortfolioList();
+        }
+
+        function setPortfolioReplacement(index, inputEl) {
+            const file = inputEl.files && inputEl.files[0] ? inputEl.files[0] : null;
+            if (!file) return;
+            if (!isValidPortfolioFile(file)) {
+                showPortfolioError('Invalid portfolio file type. Use jpg, jpeg, png, or mp4.');
+                inputEl.value = '';
+                return;
+            }
+            replacementPortfolioFiles[index] = file;
+            removedPortfolioIndexes.delete(index);
+            clearPortfolioError();
+            renderPortfolioList();
+        }
+
+        function getFinalPortfolioCount() {
+            const keptFromExisting = existingPortfolioFiles.length - removedPortfolioIndexes.size;
+            const newFiles = document.getElementById('portfolio_new_files').files || [];
+            return keptFromExisting + newFiles.length;
+        }
+
+        function updateProfilePicturePreview(path, initials = 'JD') {
+            const img = document.getElementById('profilePicPreview');
+            const fallback = document.getElementById('profilePicFallback');
+            fallback.textContent = initials;
+
+            if (path) {
+                img.src = path;
+                img.style.display = 'block';
+                fallback.style.display = 'none';
+            } else {
+                img.removeAttribute('src');
+                img.style.display = 'none';
+                fallback.style.display = 'flex';
+            }
+        }
+
+        function handleStateChange(stateId) {
+            document.getElementById('pincode').value = '';
+            loadCities(stateId);
+        }
+
+        function showPortfolioError(message) {
+            const errorEl = document.getElementById('portfolioInlineError');
+            const section = document.getElementById('portfolioList');
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+            }
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function clearPortfolioError() {
+            const errorEl = document.getElementById('portfolioInlineError');
+            if (errorEl) {
+                errorEl.textContent = '';
+                errorEl.style.display = 'none';
+            }
+        }
+
+        // ==================== FORM FUNCTIONS ====================
+        async function loadProfileData() {
+            try {
+                const response = await fetch('/api/profile');
+
+                if (response.status === 401) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load profile');
+                }
+
+                const artist = data.artist;
+
+                // Update initials/profile image
+                const initials = (artist.first_name[0] || '') + (artist.last_name[0] || '');
+                const sidebarLogo = document.getElementById('sidebarLogo');
+                if (sidebarLogo) {
+                    sidebarLogo.innerHTML = '';
+                    const brandLogo = document.createElement('img');
+                    brandLogo.src = '/static/logo.png';
+                    brandLogo.alt = 'CreoVibe';
+                    brandLogo.style.width = '100%';
+                    brandLogo.style.height = '100%';
+                    brandLogo.style.objectFit = 'cover';
+                    brandLogo.style.borderRadius = '50%';
+                    brandLogo.onerror = () => { sidebarLogo.textContent = 'CV'; };
+                    sidebarLogo.appendChild(brandLogo);
+                }
+                const navProfile = document.getElementById('navProfilePic');
+                if (artist.profile_pic) {
+                    navProfile.textContent = '';
+                    navProfile.style.backgroundImage = `url('${artist.profile_pic}')`;
+                    navProfile.style.backgroundSize = 'cover';
+                    navProfile.style.backgroundPosition = 'center';
+                    navProfile.style.color = 'transparent';
+                } else {
+                    navProfile.style.backgroundImage = '';
+                    navProfile.style.backgroundSize = '';
+                    navProfile.style.backgroundPosition = '';
+                    navProfile.style.color = '';
+                    navProfile.textContent = (initials || 'CV').toUpperCase();
+                }
+                updateProfilePicturePreview(artist.profile_pic || '', initials);
+
+                // Fill form fields
+                document.getElementById('first_name').value = artist.first_name || '';
+                document.getElementById('last_name').value = artist.last_name || '';
+                document.getElementById('gender').value = artist.gender || 'Male';
+                document.getElementById('dob').value = formatDateForInput(artist.dob);
+                document.getElementById('email').value = artist.username || '';
+                document.getElementById('phone').value = artist.phone_number || '';
+                document.getElementById('category').value = artist.category || 'Singer';
+                document.getElementById('pincode').value = artist.pincode || '';
+
+                // Professional fields
+                document.getElementById('experience_years').value = artist.experience_years != null ? artist.experience_years : '';
+                document.getElementById('price_per_hour').value = artist.price_per_hour != null ? artist.price_per_hour : '';
+                document.getElementById('working_start_time').value = artist.working_start_time || '';
+                document.getElementById('working_end_time').value = artist.working_end_time || '';
+
+                // Bank details
+                document.getElementById('bank_name').value = artist.bank_name || '';
+                document.getElementById('account_holder_name').value = artist.account_holder_name || '';
+                document.getElementById('bank_account_number').value = artist.bank_account_number || '';
+                document.getElementById('ifsc_code').value = artist.ifsc_code || '';
+                document.getElementById('upi_id').value = artist.upi_id || '';
+
+                existingPortfolioFiles = Array.isArray(artist.portfolio_files) ? artist.portfolio_files : [];
+                removedPortfolioIndexes.clear();
+                Object.keys(replacementPortfolioFiles).forEach((k) => delete replacementPortfolioFiles[k]);
+                renderPortfolioList();
+
+                // Load states and set the current state
+                await loadStates(artist.state_id, artist.city_id);
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showMessage('Error loading profile data', 'error');
+            }
+        }
+
+        async function loadStates(selectedStateId = null, selectedCityId = null) {
+            try {
+                const response = await fetch('/api/states');
+                const data = await response.json();
+
+                const stateSelect = document.getElementById('state_id');
+                stateSelect.innerHTML = '<option value="">Select State</option>';
+
+                if (data.success && data.states) {
+                    data.states.forEach(state => {
+                        const option = document.createElement('option');
+                        option.value = state.State_ID;
+                        option.textContent = state.State_Name;
+                        if (selectedStateId && state.State_ID == selectedStateId) {
+                            option.selected = true;
+                            // Load cities for selected state
+                            setTimeout(() => loadCities(selectedStateId, selectedCityId), 100);
+                        }
+                        stateSelect.appendChild(option);
+                    });
+
+                    // If no state is selected but we have a state_id, select it
+                    if (selectedStateId && !stateSelect.value) {
+                        const option = stateSelect.querySelector(`option[value="${selectedStateId}"]`);
+                        if (option) {
+                            option.selected = true;
+                            loadCities(selectedStateId, selectedCityId);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading states:', error);
+            }
+        }
+
+        async function loadCities(stateId, selectedCityId = null) {
+            if (!stateId) {
+                document.getElementById('city_id').disabled = true;
+                document.getElementById('city_id').innerHTML = '<option value="">Select City</option>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/cities/${stateId}`);
+                const data = await response.json();
+
+                const citySelect = document.getElementById('city_id');
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                citySelect.disabled = false;
+
+                if (data.success && data.cities) {
+                    data.cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city.City_ID;
+                        option.textContent = city.City_Name;
+                        if (selectedCityId && city.City_ID == selectedCityId) {
+                            option.selected = true;
+                        }
+                        citySelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading cities:', error);
+            }
+        }
+
+        function showMessage(message, type = 'success') {
+            const alert = document.getElementById('messageAlert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        // ==================== FORM SUBMISSION ====================
+        document.getElementById('editProfileForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            clearPortfolioError();
+
+            const payload = {
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                gender: document.getElementById('gender').value,
+                dob: document.getElementById('dob').value,
+                phone: document.getElementById('phone').value,
+                category: document.getElementById('category').value,
+                state_id: document.getElementById('state_id').value,
+                city_id: document.getElementById('city_id').value,
+                pincode: document.getElementById('pincode').value,
+                experience_years: document.getElementById('experience_years').value || null,
+                price_per_hour: document.getElementById('price_per_hour').value || null,
+                working_start_time: document.getElementById('working_start_time').value || null,
+                working_end_time: document.getElementById('working_end_time').value || null,
+                bank_name: document.getElementById('bank_name').value || null,
+                account_holder_name: document.getElementById('account_holder_name').value || null,
+                bank_account_number: document.getElementById('bank_account_number').value || null,
+                ifsc_code: document.getElementById('ifsc_code').value || null,
+                upi_id: document.getElementById('upi_id').value || null
+            };
+
+            // Validation
+            if (!payload.first_name || !payload.last_name) {
+                showMessage('Please enter your name', 'error');
+                return;
+            }
+
+            if (!payload.phone.match(/^[0-9]{10}$/)) {
+                showMessage('Please enter a valid 10-digit phone number', 'error');
+                return;
+            }
+
+            if (!payload.pincode.match(/^[0-9]{6}$/)) {
+                showMessage('Please enter a valid 6-digit pincode', 'error');
+                return;
+            }
+
+            const portfolioNewFiles = document.getElementById('portfolio_new_files').files || [];
+            for (let i = 0; i < portfolioNewFiles.length; i++) {
+                if (!isValidPortfolioFile(portfolioNewFiles[i])) {
+                    showPortfolioError('Invalid new portfolio file type. Use jpg, jpeg, png, or mp4.');
+                    return;
+                }
+            }
+
+            const finalCount = getFinalPortfolioCount();
+            if (finalCount < 3) {
+                showPortfolioError('Portfolio must have at least 3 files.');
+                return;
+            }
+            if (finalCount > 10) {
+                showPortfolioError('Portfolio cannot exceed 10 files.');
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                Object.keys(payload).forEach((key) => formData.append(key, payload[key]));
+
+                const profilePicture = document.getElementById('profile_picture').files[0];
+                if (profilePicture) {
+                    const lower = profilePicture.name.toLowerCase();
+                    if (!(lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png'))) {
+                        showMessage('Profile picture must be jpg, jpeg, or png.', 'error');
+                        return;
+                    }
+                    formData.append('profile_picture', profilePicture);
+                }
+
+                formData.append('removed_portfolio_indexes', JSON.stringify(Array.from(removedPortfolioIndexes)));
+
+                const replacementEntries = Object.entries(replacementPortfolioFiles)
+                    .sort((a, b) => Number(a[0]) - Number(b[0]));
+                replacementEntries.forEach(([idx, file]) => {
+                    formData.append('replacement_indices', idx);
+                    formData.append('replacement_files', file);
+                });
+
+                for (let i = 0; i < portfolioNewFiles.length; i++) {
+                    formData.append('portfolio_new_files', portfolioNewFiles[i]);
+                }
+
+                const response = await fetch('/api/profile/update_with_media', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    clearPortfolioError();
+                    showMessage('Profile updated successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'profile.html';
+                    }, 1500);
+                } else {
+                    const err = data.error || 'Failed to update profile';
+                    if (err.toLowerCase().includes('portfolio') || err.toLowerCase().includes('media')) {
+                        showPortfolioError(err);
+                    } else {
+                        showMessage(err, 'error');
+                    }
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        });
+
+        document.getElementById('portfolio_new_files').addEventListener('change', function () {
+            clearPortfolioError();
+        });
+
+        // ==================== INITIALIZE ====================
+
+        async function loadNotificationCount() {
+            try {
+                const r = await fetch('/api/notifications/count');
+                if (!r.ok) return;
+                const d = await r.json();
+                const badge = document.getElementById('notifCountBadge');
+                if (!badge) return;
+                const count = d.unread || 0;
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (e) { /* silent */ }
+        }
+        async function init() {
+            const isLoggedIn = await checkLogin();
+            if (!isLoggedIn) return;
+
+            initSidebar();
+            initProfileDropdown();
+            setupLogout();
+
+            // Show form after loading
+            document.getElementById('loadingSpinner').classList.add('hidden');
+            document.getElementById('formContent').classList.remove('hidden');
+
+            // Load data
+            await loadProfileData();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+<footer class="site-footer" id="siteFooter">
+  <div class="site-footer-inner">
+    <p><span class="footer-brand">CreoVibe</span> &mdash; Artist Booking Platform</p>
+    <p>&copy; 2026 CreoVibe. All rights reserved.</p>
+  </div>
+</footer>
+<style>
+.site-footer {
+  margin-left: var(--sidebar-w, 260px);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: rgba(255,255,255,.90);
+  border-top: none;
+  transition: margin-left 0.25s ease;
+}
+.site-footer-inner {
+  padding: 16px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+}
+.site-footer p { margin: 0; }
+.footer-brand {
+  font-family: "Monotype Corsiva", cursive;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+</style>
+<script>
+(function(){
+  var sb=document.getElementById('sidebar'), ft=document.getElementById('siteFooter');
+  if(sb&&ft){ new MutationObserver(function(){
+    ft.style.marginLeft = sb.classList.contains('collapsed') ? 'var(--sidebar-w-sm, 60px)' : 'var(--sidebar-w, 260px)';
+  }).observe(sb,{attributes:true,attributeFilter:['class']}); }
+})();
+</script>
+</body>
+
+</html>

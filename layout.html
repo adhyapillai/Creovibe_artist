@@ -1,0 +1,725 @@
+{% extends "layout.html" %}
+
+{% block title %}Artist Dashboard - Creovibe{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary: #4A6CF7; /* Blue */
+    --accent: #8C52FF;  /* Purple */
+    --bg: #F5F7FF;
+    --card: #ffffff;
+    --border: #e1e4eb;
+    --text-muted: #777;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    background: var(--bg);
+}
+
+/* SIDEBAR */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 260px;
+    height: 100vh;
+    background: #ffffff;
+    border-right: 1px solid #ececec;
+    transition: width 0.25s ease;
+    z-index: 999;
+    overflow: hidden;
+}
+
+/* COLLAPSED SIDEBAR */
+.sidebar.collapsed {
+    width: 60px;
+}
+
+/* LOGO BLOCK */
+.sidebar-logo-block {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.sidebar.collapsed .sidebar-logo-block {
+    height: 100px;
+}
+
+/* LOGO + TEXT ROW */
+.logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.sidebar-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #ddd;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+    white-space: nowrap;
+    font-family: "Monotype Corsiva", cursive;
+}
+
+/* MENU */
+.sidebar-menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.menu-item {
+    padding: 13px 12.5px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--primary);
+    transition: 0.2s ease;
+    text-decoration: none;
+}
+
+.menu-item:hover {
+    background: #EAF0FF;
+    text-decoration: none;
+    color: var(--primary);
+}
+
+.menu-item.active {
+    background: var(--primary);
+    color: white;
+}
+
+.menu-item i {
+    font-size: 22px;
+}
+
+/* TOP NAVBAR */
+.topnav {
+    position: fixed;
+    left: 260px;
+    top: 0;
+    height: 80px;
+    width: calc(100% - 260px);
+    background: #ffffff;
+    border-bottom: 1px solid #ececec;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 28px;
+    transition: 0.25s ease;
+    z-index: 998;
+}
+
+.sidebar.collapsed ~ .topnav {
+    left: 80px;
+    width: calc(100% - 80px);
+}
+
+.topnav .nav-icon {
+    font-size: 26px;
+    color: var(--primary);
+    margin-right: 24px;
+    cursor: pointer;
+}
+
+.profile-pic {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #ddd;
+    overflow: hidden;
+}
+
+.profile-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* DASHBOARD CONTENT */
+.dashboard {
+    margin-left: 260px;
+    margin-top: 110px;
+    padding: 24px;
+    transition: 0.25s ease;
+}
+
+.sidebar.collapsed ~ .topnav + .dashboard {
+    margin-left: 80px;
+}
+
+/* CARDS */
+.card-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+    margin-top: 22px;
+}
+
+.card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-icon {
+    font-size: 32px;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.card-title {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+}
+
+.card-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+}
+
+.card-subtitle {
+    font-size: 13px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* WEEK CALENDAR */
+.section-title {
+    margin-top: 38px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+}
+
+.calendar-wrapper {
+    margin-top: 12px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.day-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 12px;
+    min-height: 120px;
+}
+
+.day-header {
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.day-card.today {
+    border: 2px solid var(--primary);
+    background: #F5F7FF;
+}
+
+.slot {
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #EAF0FF;
+    color: var(--primary);
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.slot.booked {
+    background: #FFE6E6;
+    color: #FF4757;
+}
+
+/* NOTIFICATIONS */
+.notification-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 12px;
+}
+
+.notification-item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-icon {
+    font-size: 20px;
+    color: var(--primary);
+}
+
+.notification-content h6 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.notification-content p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #999;
+}
+
+/* QUICK ACTIONS */
+.quick-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    flex: 1;
+    min-width: 200px;
+    padding: 15px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s;
+}
+
+.action-btn:hover {
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-3px);
+}
+
+.action-btn i {
+    font-size: 24px;
+}
+
+.action-text h5 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.action-text p {
+    margin: 5px 0 0 0;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+    .card-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .week-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+    }
+    
+    .sidebar.collapsed {
+        width: 0;
+    }
+    
+    .topnav {
+        left: 60px;
+        width: calc(100% - 60px);
+    }
+    
+    .dashboard {
+        margin-left: 60px;
+    }
+    
+    .card-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .week-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .week-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        min-width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ========================= SIDEBAR ========================= -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-logo-block">
+        <div class="logo-row">
+            <div class="sidebar-logo">
+                {% if artist and artist.Portfolio_Path %}
+                <img src="{{ artist.Portfolio_Path }}" alt="Profile">
+                {% else %}
+                <div style="background: #4A6CF7; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold;">
+                    {{ artist.First_Name[0] }}{{ artist.Last_Name[0] if artist.Last_Name else '' }}
+                </div>
+                {% endif %}
+            </div>
+            <span class="logo-text">CreoVibe</span>
+        </div>
+    </div>
+
+    <ul class="sidebar-menu">
+        <li class="menu-item menu-toggle" id="menuBtn">
+            <i class="ri-menu-line"></i><span>Menu</span>
+        </li>
+        <a href="{{ url_for('dashboard') }}" class="menu-item active">
+            <i class="ri-dashboard-line"></i><span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('profile') }}" class="menu-item">
+            <i class="ri-user-line"></i><span>Profile</span>
+        </a>
+        <a href="{{ url_for('subscription') }}" class="menu-item">
+            <i class="ri-vip-crown-line"></i><span>Subscription</span>
+        </a>
+        <a href="{{ url_for('calendar_view') }}" class="menu-item">
+            <i class="ri-calendar-line"></i><span>Calendar</span>
+        </a>
+        <a href="{{ url_for('booking_details') }}" class="menu-item">
+            <i class="ri-calendar-check-line"></i><span>Bookings</span>
+        </a>
+        <a href="{{ url_for('earnings') }}" class="menu-item">
+            <i class="ri-wallet-3-line"></i><span>Earnings</span>
+        </a>
+        <a href="{{ url_for('notifications') }}" class="menu-item">
+            <i class="ri-notification-3-line"></i><span>Notifications</span>
+        </a>
+        <a href="{{ url_for('feedback') }}" class="menu-item">
+            <i class="ri-chat-3-line"></i><span>Feedback</span>
+        </a>
+        <a href="{{ url_for('logout') }}" class="menu-item text-danger" style="margin-top: 20px;">
+            <i class="ri-logout-box-line"></i><span>Logout</span>
+        </a>
+    </ul>
+</div>
+
+<!-- ========================= TOP NAVBAR ========================= -->
+<div class="topnav">
+    <a href="{{ url_for('notifications') }}" class="nav-icon">
+        <i class="ri-notification-3-line"></i>
+    </a>
+    <div class="profile-pic">
+        {% if artist and artist.Portfolio_Path %}
+        <img src="{{ artist.Portfolio_Path }}" alt="Profile">
+        {% else %}
+        <div style="background: #4A6CF7; color: white; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: bold;">
+            {{ artist.First_Name[0] }}{{ artist.Last_Name[0] if artist.Last_Name else '' }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ========================= DASHBOARD CONTENT ========================= -->
+<div class="dashboard">
+    <h2>Welcome, {{ artist.First_Name }}!</h2>
+    <div class="text-muted">Overview of your bookings, earnings & updates</div>
+
+    <!-- Stats Cards -->
+    <div class="card-row">
+        <div class="card">
+            <div class="card-icon"><i class="ri-calendar-check-line"></i></div>
+            <div class="card-title">Total Bookings</div>
+            <div class="card-value">{{ total_bookings }}</div>
+        </div>
+        
+        <div class="card">
+            <div class="card-icon"><i class="ri-time-line"></i></div>
+            <div class="card-title">Pending Bookings</div>
+            <div class="card-value">{{ pending_bookings }}</div>
+            <div class="card-subtitle">Awaiting confirmation</div>
+        </div>
+        
+        <div class="card">
+            <div class="card-icon"><i class="ri-money-rupee-circle-line"></i></div>
+            <div class="card-title">Total Earnings</div>
+            <div class="card-value">₹{{ earnings|round(2) }}</div>
+            <div class="card-subtitle">All time</div>
+        </div>
+        
+        <div class="card">
+            <div class="card-icon"><i class="ri-vip-crown-line"></i></div>
+            <div class="card-title">Subscription</div>
+            <div class="card-value">
+                {% if free_trial %}Free Trial{% else %}Active{% endif %}
+            </div>
+            <div class="card-subtitle">
+                {% if free_trial %}
+                {{ (30 - (datetime.now().date() - artist.Created_at.date()).days) }} days left
+                {% else %}
+                Valid till {{ current_sub.End_Date if current_sub else 'N/A' }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section-title">Quick Actions</div>
+    <div class="quick-actions">
+        <a href="{{ url_for('calendar_edit') }}" class="action-btn">
+            <i class="ri-add-circle-line"></i>
+            <div class="action-text">
+                <h5>Add Time Slot</h5>
+                <p>Add available time to calendar</p>
+            </div>
+        </a>
+        
+        <a href="{{ url_for('edit_profile') }}" class="action-btn">
+            <i class="ri-edit-line"></i>
+            <div class="action-text">
+                <h5>Edit Profile</h5>
+                <p>Update your profile details</p>
+            </div>
+        </a>
+        
+        <a href="{{ url_for('subscription') }}" class="action-btn">
+            <i class="ri-upgrade-line"></i>
+            <div class="action-text">
+                <h5>Upgrade Plan</h5>
+                <p>View subscription plans</p>
+            </div>
+        </a>
+        
+        <a href="{{ url_for('booking_details') }}?status=pending" class="action-btn">
+            <i class="ri-inbox-line"></i>
+            <div class="action-text">
+                <h5>Check Requests</h5>
+                <p>View pending bookings</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- Upcoming Bookings -->
+    <div class="section-title">Upcoming Bookings (Next 7 Days)</div>
+    <div class="calendar-wrapper">
+        {% if upcoming_bookings %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Client</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in upcoming_bookings %}
+                    <tr>
+                        <td>{{ booking.Slot_Date }}</td>
+                        <td>{{ booking.Start_Time }}</td>
+                        <td>{{ booking.First_Name }} {{ booking.Last_Name }}</td>
+                        <td><span class="badge bg-primary">{{ booking.Slot_Type }}</span></td>
+                        <td><span class="badge bg-success">{{ booking.Booking_Status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No upcoming bookings in the next 7 days.</p>
+        {% endif %}
+    </div>
+
+    <!-- Recent Feedback -->
+    <div class="section-title">Recent Feedback</div>
+    <div class="notification-card">
+        {% if recent_feedback %}
+            {% for feedback in recent_feedback %}
+            <div class="notification-item">
+                <div class="notification-icon">
+                    <i class="ri-star-fill" style="color: #FFC107;"></i>
+                </div>
+                <div class="notification-content">
+                    <h6>{{ feedback.First_Name }} {{ feedback.Last_Name }}</h6>
+                    <p>{{ feedback.Comments or 'No comment provided' }}</p>
+                    <div class="notification-time">
+                        {{ feedback.Rating }} ★ | {{ feedback.Created_At|datetimeformat('%d %b %Y') }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center py-3">No feedback yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Weekly Calendar -->
+    <div class="section-title">This Week</div>
+    <div class="calendar-wrapper">
+        <div class="text-muted">Weekly schedule overview</div>
+        <div class="week-grid" id="weekGrid"></div>
+    </div>
+</div>
+<!-- Add to your layout -->
+<div class="logo">
+    <span class="logo-icon">🎨</span>
+    <span class="logo-text">CreoVibe</span>
+</div>
+
+<style>
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.logo-icon {
+    font-size: 32px;
+}
+.logo-text {
+    font-family: 'Monotype Corsiva', cursive;
+    font-size: 28px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #4A6CF7, #8C52FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+</style>
+
+<!-- ========================= JAVASCRIPT ========================= -->
+<script src="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css"></script>
+<script>
+// Sidebar toggle
+const sidebar = document.getElementById("sidebar");
+const menuBtn = document.getElementById("menuBtn");
+
+menuBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("collapsed");
+    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+});
+
+// Check saved preference
+if (localStorage.getItem('sidebarCollapsed') === 'true') {
+    sidebar.classList.add('collapsed');
+}
+
+// Render weekly calendar
+function renderWeek() {
+    const grid = document.getElementById("weekGrid");
+    grid.innerHTML = '';
+    
+    const today = new Date();
+    const start = new Date(today);
+    start.setDate(today.getDate() - today.getDay());
+    
+    // Sample slots data (in real app, fetch from backend)
+    const sampleSlots = {
+        0: ['10:00 AM - Meeting', '2:00 PM - Performance'],
+        1: ['11:00 AM - Call'],
+        3: ['9:00 AM - Wedding', '6:00 PM - Corporate'],
+        5: ['3:00 PM - Consultation']
+    };
+
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        
+        const isToday = d.toDateString() === today.toDateString();
+        const daySlots = sampleSlots[i] || ['No bookings'];
+
+        const card = document.createElement("div");
+        card.className = `day-card ${isToday ? 'today' : ''}`;
+
+        let slotsHTML = '';
+        daySlots.forEach(slot => {
+            const isBooked = Math.random() > 0.5; // Sample logic
+            slotsHTML += `<div class="slot ${isBooked ? 'booked' : ''}">${slot}</div>`;
+        });
+
+        card.innerHTML = `
+            <div class="day-header">
+                ${d.toLocaleString('en', {weekday: 'short'})}<br>
+                <strong>${d.getDate()}</strong>
+            </div>
+            ${slotsHTML}
+        `;
+
+        grid.appendChild(card);
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    renderWeek();
+    
+    // Update notification count
+    fetch('/api/notification_count')
+        .then(response => response.json())
+        .then(data => {
+            if (data.count > 0) {
+                const badge = document.createElement('span');
+                badge.className = 'notification-badge';
+                badge.style.cssText = 'position: absolute; top: 10px; right: 10px; background: red; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 12px; display: flex; align-items: center; justify-content: center;';
+                badge.textContent = data.count;
+                document.querySelector('.nav-icon').style.position = 'relative';
+                document.querySelector('.nav-icon').appendChild(badge);
+            }
+        });
+});
+</script>
+{% endblock %}

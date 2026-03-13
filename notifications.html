@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications - CreoVibe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #667eea;
+            --accent: #764ba2;
+            --bg: #F5F7FF;
+            --card: #ffffff;
+            --border: #e1e4eb;
+            --text-muted: #777;
+            --sidebar-w: 260px;
+            --sidebar-w-sm: 60px;
+            --topnav-h: 70px;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: var(--bg);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 55%, #5c3691 100%);
+            transition: width 0.25s ease;
+            z-index: 999;
+            overflow: hidden;
+            box-shadow: 4px 0 20px rgba(102, 126, 234, .35);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-w-sm);
+        }
+
+        .sidebar-logo-block {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .15);
+        }
+
+        .logo-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .25);
+            border: 2px solid rgba(255, 255, 255, .50);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            font-family: "Monotype Corsiva", cursive;
+        }
+
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+
+        .sidebar.collapsed .logo-row {
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .sidebar-logo {
+            width: 44px;
+            height: 44px;
+        }
+
+        /* MENU */
+        .sidebar-menu {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .menu-item {
+            padding: 13px 12.5px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 15px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, .80);
+            transition: 0.2s ease;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, .18);
+            color: #ffffff;
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, .25);
+            color: #ffffff;
+            font-weight: 600;
+            border-left: 3px solid #ffffff;
+        }
+
+        .menu-item i {
+            font-size: 22px;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .menu-item {
+            justify-content: center;
+        }
+
+        /* TOP NAVBAR */
+        .topnav {
+            position: fixed;
+            left: var(--sidebar-w);
+            top: 0;
+            height: var(--topnav-h);
+            width: calc(100% - var(--sidebar-w));
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            gap: 8px;
+            z-index: 998;
+            transition: left 0.25s ease, width 0.25s ease;
+            box-shadow: 0 3px 14px rgba(102, 126, 234, .30);
+        }
+
+        .sidebar.collapsed~.topnav {
+            left: var(--sidebar-w-sm);
+            width: calc(100% - var(--sidebar-w-sm));
+        }
+
+        .notif-bell-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+        .notif-count-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            background: #e74c3c;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 16px; height: 16px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 3px;
+            pointer-events: none;
+        }
+        .nav-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .18);
+            border: 1px solid rgba(255, 255, 255, .35);
+            font-size: 22px;
+            color: #ffffff;
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .nav-icon:hover {
+            background: rgba(255, 255, 255, .30);
+        }
+
+        .user-profile {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px 5px 6px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, .18);
+        }
+
+        .profile-pic {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .30);
+            border: 2px solid rgba(255, 255, 255, .60);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .profile-dropdown-arrow {
+            color: rgba(255, 255, 255, .85);
+            font-size: 18px;
+            transition: transform .3s;
+            line-height: 1;
+        }
+
+        .user-profile:hover .profile-dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e1e4eb;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .13);
+            min-width: 190px;
+            display: none;
+            z-index: 1050;
+            overflow: hidden;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+            animation: fadeIn .18s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px) scale(.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dropdown-item {
+            padding: 11px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #f5f7fa;
+            color: var(--primary);
+        }
+
+        .dropdown-item.logout {
+            color: #e74c3c;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fef2f2;
+            color: #c0392b;
+        }
+
+        /* MAIN CONTENT */
+        .dashboard {
+            margin-left: var(--sidebar-w);
+            margin-top: var(--topnav-h);
+            padding: 28px 30px 48px;
+            transition: margin-left 0.25s ease;
+            min-height: calc(100vh - var(--topnav-h));
+        }
+
+        .sidebar.collapsed~.topnav+.dashboard {
+            margin-left: var(--sidebar-w-sm);
+        }
+
+
+
+        /* NOTIFICATIONS PAGE SPECIFIC STYLES */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            color: #333;
+            margin: 0;
+        }
+
+        .page-header p {
+            color: #666;
+            margin: 0;
+            max-width: 600px;
+        }
+
+        /* Notifications Container */
+        .notifications-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .notifications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .notifications-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 20px;
+        }
+
+        /* Notification Timeline */
+        .notifications-timeline {
+            position: relative;
+        }
+
+        .notification-item {
+            display: flex;
+            padding: 18px 20px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            align-items: flex-start;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .notification-item:hover {
+            background: #f8f9fa;
+            border-color: var(--border);
+            transform: translateY(-2px);
+        }
+
+        .notification-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-right: 18px;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.booking {
+            background: rgba(74, 108, 247, 0.1);
+            color: var(--primary);
+        }
+
+        .notification-icon.payment {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .notification-icon.feedback {
+            background: rgba(140, 82, 255, 0.1);
+            color: var(--accent);
+        }
+
+        .notification-icon.rating {
+            background: rgba(255, 193, 7, 0.15);
+            color: #e6a800;
+        }
+
+        .notification-icon.reminder {
+            background: rgba(23, 162, 184, 0.1);
+            color: var(--info);
+        }
+
+        .notification-icon.subscription {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .notification-icon.system {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .notification-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-message {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.5;
+            margin: 0 0 6px 0;
+            font-weight: 500;
+        }
+
+        .notification-timestamp {
+            font-size: 13px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .notification-link {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            padding-left: 15px;
+        }
+
+        .notification-link a {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            background: rgba(74, 108, 247, 0.08);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .notification-link a:hover {
+            background: rgba(74, 108, 247, 0.16);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h4 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .empty-state p {
+            margin: 0;
+            max-width: 400px;
+            margin: 0 auto 20px;
+        }
+
+        /* LOADING & ERROR STATES */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-box {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .notification-item {
+                flex-direction: column;
+            }
+
+            .notification-icon {
+                margin-right: 0;
+                margin-bottom: 12px;
+            }
+
+            .notification-link {
+                margin-left: 0;
+                padding-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<>
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo-block">
+            <div class="logo-row">
+                <div class="sidebar-logo" id="sidebarLogo">CV</div>
+                <span class="logo-text">CreoVibe</span>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item menu-toggle"><i class="ri-menu-line" id="menuBtn"></i><span>Menu</span></li>
+            <a href="dashboard.html" class="menu-item">
+                <i class="ri-dashboard-line"></i><span>Dashboard</span>
+            </a>
+            <a href="profile.html" class="menu-item">
+                <i class="ri-user-line"></i><span>Profile</span>
+            </a>
+            <a href="subscription.html" class="menu-item">
+                <i class="ri-vip-crown-line"></i><span>Subscription</span>
+            </a>
+            <a href="calendar_view.html" class="menu-item">
+                <i class="ri-calendar-line"></i><span>Calendar</span>
+            </a>
+            <a href="booking_details.html" class="menu-item">
+                <i class="ri-calendar-check-line"></i><span>Bookings</span>
+            </a>
+            <a href="earnings.html" class="menu-item">
+                <i class="ri-wallet-3-line"></i><span>Earnings</span>
+            </a>
+            <a href="notifications.html" class="menu-item active">
+                <i class="ri-notification-3-line"></i><span>Notifications</span>
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="ri-chat-3-line"></i><span>Feedback</span>
+            </a>
+        </ul>
+    </div>
+
+    <!-- TOP NAVBAR -->
+    <div class="topnav">
+        <span class="topnav-page-title"
+            style="color:#fff;font-size:20px;font-weight:600;margin-left:8px;">Notifications</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <span class="notif-bell-wrap"><a href="notifications.html" class="nav-icon active" id="notifBell"><i class="ri-notification-3-line"></i></a><span class="notif-count-badge" id="notifCountBadge" style="display:none;">0</span></span>
+
+            <!-- User Profile Dropdown -->
+            <div class="user-profile" id="userProfile">
+                <div class="profile-pic" id="navProfilePic"></div>
+                <div class="profile-dropdown-arrow">
+                    <i class="ri-arrow-down-s-line"></i>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="profile.html" class="dropdown-item">
+                        <i class="ri-user-line"></i> My Profile
+                    </a>
+                    <a href="#" class="dropdown-item logout" id="logoutBtn">
+                        <i class="ri-logout-box-r-line"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATIONS CONTENT -->
+    <div class="dashboard">
+
+
+
+        <div class="spinner" id="loadingSpinner"></div>
+
+        <div id="notificationsContent" class="hidden">
+            <!-- Notifications Timeline -->
+            <div class="notifications-container">
+                <div class="notifications-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                    <h3>Activity History</h3>
+                    <button id="markAllReadBtn" onclick="markAllAsRead()" style="
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 8px rgba(102,126,234,0.3);
+                    " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(102,126,234,0.4)'"
+                       onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(102,126,234,0.3)'">
+                        <i class="ri-check-double-line"></i> Mark All as Read
+                    </button>
+                </div>
+
+                <div class="notifications-timeline" id="notificationsList">
+                    <!-- Notifications will be populated here -->
+                </div>
+
+                <div id="emptyNotifications" class="empty-state hidden">
+                    <i class="ri-notification-off-line"></i>
+                    <h4>No notifications yet</h4>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorContainer" class="hidden"></div>
+    </div>
+    </div>
+
+    <script>
+        // ==================== COMMON FUNCTIONS ====================
+        async function checkLogin() {
+            try {
+                const response = await fetch('/api/check_session');
+                const data = await response.json();
+
+                if (!data.logged_in) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return false;
+                }
+
+                if (!localStorage.getItem('artist_id')) {
+                    localStorage.setItem('artist_id', data.artist_id);
+                }
+
+                window.__artistProfilePic = data.profile_pic || '';
+                if (data.user_initials) {
+                    updateUserInitials(data.user_initials, data.profile_pic);
+                }
+
+                return true;
+            } catch (error) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return false;
+            }
+        }
+
+        function initSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menuBtn');
+
+            if (menuBtn && sidebar) {
+                menuBtn.onclick = () => {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                };
+
+                if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
+            }
+        }
+
+        // Profile dropdown functionality
+        function initProfileDropdown() {
+            const userProfile = document.getElementById('userProfile');
+            const dropdown = document.getElementById('profileDropdown');
+
+            userProfile.addEventListener('click', function (e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function () {
+                dropdown.classList.remove('show');
+            });
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // ==================== NOTIFICATIONS FUNCTIONS ====================
+
+        // Icon and class mapping per notification type
+        function getNotificationIcon(type, status) {
+            switch (type) {
+                case 'booking':
+                    if (status === 'cancelled' || status === 'canceled') {
+                        return { icon: 'ri-calendar-close-line', cssClass: 'booking' };
+                    }
+                    return { icon: 'ri-calendar-check-line', cssClass: 'booking' };
+                case 'payment':
+                    return { icon: 'ri-wallet-3-line', cssClass: 'payment' };
+                case 'feedback':
+                    return { icon: 'ri-chat-3-line', cssClass: 'feedback' };
+                case 'review':
+                case 'rating':
+                    return { icon: 'ri-star-line', cssClass: 'rating' };
+                case 'reminder':
+                    return { icon: 'ri-notification-3-line', cssClass: 'reminder' };
+                case 'subscription':
+                    return { icon: 'ri-vip-crown-line', cssClass: 'subscription' };
+                case 'system':
+                default:
+                    return { icon: 'ri-notification-3-line', cssClass: 'system' };
+            }
+        }
+
+        // Get link for notification based on type
+        function getNotificationLink(notification) {
+            switch (notification.type) {
+                case 'booking':
+                    return { href: 'booking_details.html', label: 'View Bookings' };
+                case 'payment':
+                    return { href: 'earnings.html', label: 'View Earnings' };
+                case 'feedback':
+                case 'review':
+                case 'rating':
+                    return { href: 'feedback.html', label: 'View Feedback' };
+                case 'reminder':
+                    return { href: 'calendar_view.html', label: 'View Calendar' };
+                case 'subscription':
+                    return { href: 'subscription.html', label: 'View Subscription' };
+                default:
+                    return null;
+            }
+        }
+
+        async function loadNotificationsData() {
+            try {
+                const response = await fetch('/api/notifications');
+
+                if (response.status === 401) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load notifications');
+                }
+
+                // Hide spinner, show content
+                document.getElementById('loadingSpinner').classList.add('hidden');
+                document.getElementById('notificationsContent').classList.remove('hidden');
+
+                // Sort latest first
+                const notifications = (data.notifications || []).sort(
+                    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+                );
+
+                displayNotifications(notifications);
+
+            } catch (error) {
+                console.error('Notifications error:', error);
+                document.getElementById('loadingSpinner').classList.add('hidden');
+
+                const errorDiv = document.getElementById('errorContainer');
+                errorDiv.classList.remove('hidden');
+                errorDiv.innerHTML = `
+            <div class="error-box">
+                <h3><i class="ri-error-warning-line"></i> Error Loading Notifications</h3>
+                <p>${error.message}</p>
+                <button onclick="loadNotificationsData()" style="
+                    background: #667eea; 
+                    color: white; 
+                    border: none; 
+                    padding: 10px 20px; 
+                    border-radius: 8px; 
+                    cursor: pointer;
+                    margin-top: 10px;
+                ">
+                    <i class="ri-refresh-line"></i> Retry
+                </button>
+            </div>
+        `;
+            }
+        }
+
+        async function markAllAsRead() {
+            const btn = document.getElementById('markAllReadBtn');
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="ri-loader-4-line" style="animation:spin 1s linear infinite"></i> Marking...';
+
+                const response = await fetch('/api/notifications/mark_all_read', { method: 'POST' });
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to mark notifications as read');
+                }
+
+                // Reload notifications to reflect changes
+                await loadNotificationsData();
+
+                btn.innerHTML = '<i class="ri-check-double-line"></i> Mark All as Read';
+                btn.disabled = false;
+            } catch (error) {
+                console.error('Mark all read error:', error);
+                alert(error.message || 'Failed to mark notifications as read');
+                btn.innerHTML = '<i class="ri-check-double-line"></i> Mark All as Read';
+                btn.disabled = false;
+            }
+        }
+
+        function displayNotifications(notifications) {
+            const listEl = document.getElementById('notificationsList');
+            const emptyState = document.getElementById('emptyNotifications');
+
+            if (notifications.length === 0) {
+                listEl.style.display = 'none';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            listEl.style.display = 'block';
+            listEl.innerHTML = '';
+
+            notifications.forEach(notification => {
+                const { icon, cssClass } = getNotificationIcon(notification.type, notification.status);
+                const link = getNotificationLink(notification);
+                const timeStr = formatTimestamp(new Date(notification.timestamp));
+
+                // Build the notification message text
+                let messageText = notification.message || notification.title || 'You have a new notification.';
+
+                // Build link HTML
+                let linkHTML = '';
+                if (link) {
+                    linkHTML = `
+                        <div class="notification-link">
+                            <a href="${link.href}">
+                                ${link.label} <i class="ri-arrow-right-s-line"></i>
+                            </a>
+                        </div>
+                    `;
+                }
+
+                const itemEl = document.createElement('div');
+                itemEl.className = 'notification-item';
+                itemEl.innerHTML = `
+                    <div class="notification-icon ${cssClass}">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="notification-body">
+                        <p class="notification-message">${messageText}</p>
+                        <div class="notification-timestamp">
+                            <i class="ri-time-line"></i> ${timeStr}
+                        </div>
+                    </div>
+                    ${linkHTML}
+                `;
+
+                listEl.appendChild(itemEl);
+            });
+        }
+
+        function formatTimestamp(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMin = Math.floor(diffMs / 60000);
+            const diffHour = Math.floor(diffMin / 60);
+            const diffDay = Math.floor(diffHour / 24);
+
+            // Show relative time for recent, absolute for older
+            if (diffMin < 1) {
+                return 'Just now';
+            } else if (diffMin < 60) {
+                return `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`;
+            } else if (diffHour < 24) {
+                return `${diffHour} hour${diffHour !== 1 ? 's' : ''} ago`;
+            } else if (diffDay < 7) {
+                return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
+            } else {
+                // Full date + time for older notifications
+                return date.toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                }) + ' • ' + date.toLocaleTimeString('en-IN', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            }
+        }
+
+        function updateUserInitials(initials, profilePic) {
+            const sidebarLogo = document.getElementById('sidebarLogo');
+            if (sidebarLogo) {
+                sidebarLogo.innerHTML = '';
+                const brandLogo = document.createElement('img');
+                brandLogo.src = '/static/logo.png';
+                brandLogo.alt = 'CreoVibe';
+                brandLogo.style.width = '100%';
+                brandLogo.style.height = '100%';
+                brandLogo.style.objectFit = 'cover';
+                brandLogo.style.borderRadius = '50%';
+                brandLogo.onerror = () => { sidebarLogo.textContent = 'CV'; };
+                sidebarLogo.appendChild(brandLogo);
+            }
+
+            const navProfile = document.getElementById('navProfilePic');
+            if (!navProfile) return;
+
+            const resolvedInitials = (initials || 'CV').toUpperCase();
+            const pic = profilePic || window.__artistProfilePic || '';
+            if (pic) {
+                navProfile.textContent = '';
+                navProfile.style.backgroundImage = `url('${pic}')`;
+                navProfile.style.backgroundSize = 'cover';
+                navProfile.style.backgroundPosition = 'center';
+                navProfile.style.color = 'transparent';
+            } else {
+                navProfile.style.backgroundImage = '';
+                navProfile.style.backgroundSize = '';
+                navProfile.style.backgroundPosition = '';
+                navProfile.style.color = '';
+                navProfile.textContent = resolvedInitials;
+            }
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        function setupEventListeners() {
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', function (e) {
+                e.preventDefault();
+                logout();
+            });
+        }
+
+        // ==================== INITIALIZE ====================
+
+        async function loadNotificationCount() {
+            try {
+                const r = await fetch('/api/notifications/count');
+                if (!r.ok) return;
+                const d = await r.json();
+                const badge = document.getElementById('notifCountBadge');
+                if (!badge) return;
+                const count = d.unread || 0;
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (e) { /* silent */ }
+        }
+        async function init() {
+            const isLoggedIn = await checkLogin();
+            if (!isLoggedIn) return;
+
+            initSidebar();
+            initProfileDropdown();
+            setupEventListeners();
+            loadNotificationsData();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+    <footer class="site-footer" id="siteFooter">
+        <div class="site-footer-inner">
+            <p><span class="footer-brand">CreoVibe</span> &mdash; Artist Booking Platform</p>
+            <p>&copy; 2026 CreoVibe. All rights reserved.</p>
+        </div>
+    </footer>
+    <style>
+        .site-footer {
+            margin-left: var(--sidebar-w, 260px);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: rgba(255, 255, 255, .90);
+            border-top: none;
+            transition: margin-left 0.25s ease;
+        }
+
+        .site-footer-inner {
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .site-footer p {
+            margin: 0;
+        }
+
+        .footer-brand {
+            font-family: "Monotype Corsiva", cursive;
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+    </style>
+    <script>
+        (function () {
+            var sb = document.getElementById('sidebar'), ft = document.getElementById('siteFooter');
+            if (sb && ft) {
+                new MutationObserver(function () {
+                    ft.style.marginLeft = sb.classList.contains('collapsed') ? 'var(--sidebar-w-sm, 60px)' : 'var(--sidebar-w, 260px)';
+                }).observe(sb, { attributes: true, attributeFilter: ['class'] });
+            }
+        })();
+    </script>
+    </body>
+
+</html>

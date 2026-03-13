@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile - CreoVibe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #667eea;
+            --accent: #764ba2;
+            --bg: #F5F7FF;
+            --card: #ffffff;
+            --border: #e1e4eb;
+            --text-muted: #777;
+            --sidebar-w: 260px;
+            --sidebar-w-sm: 60px;
+            --topnav-h: 70px;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: var(--bg);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 55%, #5c3691 100%);
+            transition: width 0.25s ease;
+            z-index: 999;
+            overflow: hidden;
+            box-shadow: 4px 0 20px rgba(102, 126, 234, .35);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-w-sm);
+        }
+
+        .sidebar-logo-block {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .15);
+        }
+
+        .logo-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .25);
+            border: 2px solid rgba(255, 255, 255, .50);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            font-family: "Monotype Corsiva", cursive;
+        }
+
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+
+        .sidebar.collapsed .logo-row {
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .sidebar-logo {
+            width: 44px;
+            height: 44px;
+        }
+
+        /* MENU */
+        .sidebar-menu {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .menu-item {
+            padding: 13px 12.5px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 15px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, .80);
+            transition: 0.2s ease;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, .18);
+            color: #ffffff;
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, .25);
+            color: #ffffff;
+            font-weight: 600;
+            border-left: 3px solid #ffffff;
+        }
+
+        .menu-item i {
+            font-size: 22px;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .menu-item {
+            justify-content: center;
+        }
+
+        /* TOP NAVBAR */
+        .topnav {
+            position: fixed;
+            left: var(--sidebar-w);
+            top: 0;
+            height: var(--topnav-h);
+            width: calc(100% - var(--sidebar-w));
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            gap: 8px;
+            z-index: 998;
+            transition: left 0.25s ease, width 0.25s ease;
+            box-shadow: 0 3px 14px rgba(102, 126, 234, .30);
+        }
+
+        .sidebar.collapsed~.topnav {
+            left: var(--sidebar-w-sm);
+            width: calc(100% - var(--sidebar-w-sm));
+        }
+
+        .nav-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .18);
+            border: 1px solid rgba(255, 255, 255, .35);
+            font-size: 22px;
+            color: #ffffff;
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .nav-icon:hover {
+            background: rgba(255, 255, 255, .30);
+        }
+
+        .user-profile {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px 5px 6px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, .18);
+        }
+
+        .profile-pic {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .30);
+            border: 2px solid rgba(255, 255, 255, .60);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .profile-dropdown-arrow {
+            color: rgba(255, 255, 255, .85);
+            font-size: 18px;
+            transition: transform .3s;
+            line-height: 1;
+        }
+
+        .user-profile:hover .profile-dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e1e4eb;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .13);
+            min-width: 190px;
+            display: none;
+            z-index: 1050;
+            overflow: hidden;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+            animation: fadeIn .18s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px) scale(.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dropdown-item {
+            padding: 11px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #f5f7fa;
+            color: var(--primary);
+        }
+
+        .dropdown-item.logout {
+            color: #e74c3c;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fef2f2;
+            color: #c0392b;
+        }
+
+        /* MAIN CONTENT */
+        .dashboard {
+            margin-left: var(--sidebar-w);
+            margin-top: var(--topnav-h);
+            padding: 28px 30px 48px;
+            transition: margin-left 0.25s ease;
+            min-height: calc(100vh - var(--topnav-h));
+        }
+
+        .sidebar.collapsed~.topnav+.dashboard {
+            margin-left: var(--sidebar-w-sm);
+        }
+
+
+
+        /* PROFILE SPECIFIC */
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin-right: 30px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+
+        .details-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 20px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .detail-value {
+            color: #333;
+        }
+
+        .detail-note {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 30px 0 15px 0;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a5ce5;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #fff0f0;
+            color: #e74c3c;
+            border: 2px solid #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #e74c3c;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Deactivate modal */
+        .deactivate-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .deactivate-modal-overlay.show { display: flex; }
+        .deactivate-modal {
+            background: #fff;
+            border-radius: 16px;
+            padding: 36px 32px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,.18);
+        }
+        .deactivate-modal .modal-icon {
+            width: 64px; height: 64px;
+            background: #fff0f0;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 28px; color: #e74c3c;
+        }
+        .deactivate-modal h3 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: #1a1a2e;
+        }
+        .deactivate-modal p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0 0 28px;
+        }
+        .deactivate-modal .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .deactivate-modal .modal-actions button {
+            flex: 1;
+            max-width: 160px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: .2s;
+        }
+        .btn-cancel-modal {
+            background: #f4f6f8;
+            color: #555;
+        }
+        .btn-cancel-modal:hover { background: #e8eaed; }
+        .btn-confirm-deactivate {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .btn-confirm-deactivate:hover { background: #c0392b; }
+        /* Notification badge */
+        .notif-bell-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+        .notif-count-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            background: #e74c3c;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 16px; height: 16px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 3px;
+            pointer-events: none;
+        }
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* LOADING */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-box {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .portfolio-item {
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fafafa;
+        }
+
+        .portfolio-item img,
+        .portfolio-item video {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .portfolio-meta {
+            padding: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .portfolio-empty {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {}
+
+        @media (max-width: 768px) {
+
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-avatar {
+                margin: 0 0 20px 0;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo-block">
+            <div class="logo-row">
+                <div class="sidebar-logo" id="sidebarLogo">CV</div>
+                <span class="logo-text">CreoVibe</span>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item menu-toggle"><i class="ri-menu-line" id="menuBtn"></i><span>Menu</span></li>
+            <a href="dashboard.html" class="menu-item">
+                <i class="ri-dashboard-line"></i><span>Dashboard</span>
+            </a>
+            <a href="profile.html" class="menu-item active">
+                <i class="ri-user-line"></i><span>Profile</span>
+            </a>
+            <a href="subscription.html" class="menu-item">
+                <i class="ri-vip-crown-line"></i><span>Subscription</span>
+            </a>
+            <a href="calendar_view.html" class="menu-item">
+                <i class="ri-calendar-line"></i><span>Calendar</span>
+            </a>
+            <a href="booking_details.html" class="menu-item">
+                <i class="ri-calendar-check-line"></i><span>Bookings</span>
+            </a>
+            <a href="earnings.html" class="menu-item">
+                <i class="ri-wallet-3-line"></i><span>Earnings</span>
+            </a>
+            <a href="notifications.html" class="menu-item">
+                <i class="ri-notification-3-line"></i><span>Notifications</span>
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="ri-chat-3-line"></i><span>Feedback</span>
+            </a>
+
+        </ul>
+    </div>
+
+    <!-- TOP NAVBAR -->
+    <div class="topnav">
+        <span class="topnav-page-title"
+            style="color:#fff;font-size:20px;font-weight:600;margin-left:8px;">Profile</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <span class="notif-bell-wrap">
+                <a href="notifications.html" class="nav-icon" id="notifBell">
+                    <i class="ri-notification-3-line"></i>
+                </a>
+                <span class="notif-count-badge" id="notifCountBadge" style="display:none;">0</span>
+            </span>
+
+            <!-- User Profile Dropdown -->
+            <div class="user-profile" id="userProfile">
+                <div class="profile-pic" id="navProfilePic"></div>
+
+
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="profile.html" class="dropdown-item">
+                        <i class="ri-user-line"></i> My Profile
+                    </a>
+                    <a href="#" class="dropdown-item logout" id="logoutBtn">
+                        <i class="ri-logout-box-r-line"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE CONTENT -->
+    <div class="dashboard">
+
+        <div class="spinner" id="loadingSpinner"></div>
+
+        <div id="profileContent" class="hidden">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">JD</div>
+                <div class="profile-info">
+                    <h2 id="profileName">John Doe</h2>
+                    <div style="margin: 10px 0;">
+                        <span class="badge" id="profileCategory">Singer</span>
+                    </div>
+                    <p style="margin: 5px 0;">
+                        <i class="ri-mail-line"></i> <span id="profileEmail"><a href="/cdn-cgi/l/email-protection"
+                                class="__cf_email__"
+                                data-cfemail="83e9ecebedc3e2f1f7eaf0f7ade0ecee">[email&#160;protected]</a></span>
+                    </p>
+                    <p style="margin: 5px 0;">
+                        <i class="ri-phone-line"></i> <span id="profilePhone">9876543210</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Personal Details -->
+            <div class="section-title">Personal Information</div>
+            <div class="details-card">
+                <div class="detail-row">
+                    <div class="detail-label">Full Name</div>
+                    <div class="detail-value" id="detailName">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Username</div>
+                    <div class="detail-value" id="detailUsername">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Gender</div>
+                    <div class="detail-value" id="detailGender">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Date of Birth</div>
+                    <div class="detail-value" id="detailDob">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value">
+                        <div id="detailEmail">-</div>
+                        <div class="detail-note"><i class="ri-shield-line"></i> Hidden from clients</div>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Phone Number</div>
+                    <div class="detail-value">
+                        <div id="detailPhone">-</div>
+                        <div class="detail-note"><i class="ri-shield-line"></i> Hidden from clients</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Details -->
+            <div class="section-title">Professional Information</div>
+            <div class="details-card">
+                <div class="detail-row">
+                    <div class="detail-label">Category</div>
+                    <div class="detail-value" id="detailCategory">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Experience (Years)</div>
+                    <div class="detail-value" id="detailExperience">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Price Per Hour</div>
+                    <div class="detail-value" id="detailPrice">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Working Hours</div>
+                    <div class="detail-value" id="detailWorkingHours">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Verification</div>
+                    <div class="detail-value" id="detailVerification">-</div>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="section-title">Location</div>
+            <div class="details-card">
+                <div class="detail-row">
+                    <div class="detail-label">State</div>
+                    <div class="detail-value" id="detailState">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">City</div>
+                    <div class="detail-value" id="detailCity">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Pincode</div>
+                    <div class="detail-value" id="detailPincode">-</div>
+                </div>
+            </div>
+
+            <!-- Bank Details -->
+            <div class="section-title">Bank Details</div>
+            <div class="details-card">
+                <div class="detail-row">
+                    <div class="detail-label">Bank Name</div>
+                    <div class="detail-value" id="detailBankName">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Account Holder</div>
+                    <div class="detail-value" id="detailAccountHolder">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Account Number</div>
+                    <div class="detail-value" id="detailAccountNumber">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">IFSC Code</div>
+                    <div class="detail-value" id="detailIfsc">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">UPI ID</div>
+                    <div class="detail-value" id="detailUpi">-</div>
+                </div>
+            </div>
+
+            <div class="section-title">Portfolio</div>
+            <div class="details-card">
+                <div class="portfolio-grid" id="portfolioGrid"></div>
+                <div class="portfolio-empty hidden" id="portfolioEmpty">No portfolio media uploaded yet.</div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="edit_profile.html" class="btn btn-primary">
+                    <i class="ri-edit-line"></i> Edit Profile
+                </a>
+                <a href="change_password.html" class="btn btn-secondary">
+                    <i class="ri-key-line"></i> Change Password
+                </a>
+                <button class="btn btn-danger" id="deactivateBtn" onclick="openDeactivateModal()">
+                    <i class="ri-user-unfollow-line"></i> Deactivate Account
+                </button>
+            </div>
+        </div>
+
+        <div id="errorContainer" class="hidden"></div>
+    </div>
+
+    <!-- Deactivate Account Confirmation Modal -->
+    <div class="deactivate-modal-overlay" id="deactivateModalOverlay">
+        <div class="deactivate-modal">
+            <div class="modal-icon"><i class="ri-user-unfollow-line"></i></div>
+            <h3>Deactivate Account?</h3>
+            <p>Are you sure you want to deactivate your account? You will be logged out immediately and your profile will be hidden from clients.</p>
+            <div class="modal-actions">
+                <button class="btn-cancel-modal" onclick="closeDeactivateModal()">
+                    <i class="ri-close-line"></i> Cancel
+                </button>
+                <button class="btn-confirm-deactivate" id="confirmDeactivateBtn" onclick="confirmDeactivate()">
+                    <i class="ri-check-line"></i> Deactivate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script>
+        // ==================== COMMON FUNCTIONS ====================
+        async function checkLogin() {
+            try {
+                const response = await fetch('/api/check_session');
+                const data = await response.json();
+
+                if (!data.logged_in) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return false;
+                }
+
+                if (!localStorage.getItem('artist_id')) {
+                    localStorage.setItem('artist_id', data.artist_id);
+                }
+
+                return true;
+            } catch (error) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return false;
+            }
+        }
+
+        function initSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menuBtn');
+
+            if (menuBtn && sidebar) {
+                menuBtn.onclick = () => {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                };
+
+                if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
+            }
+        }
+
+        function initProfileDropdown() {
+            const userProfile = document.getElementById('userProfile');
+            const dropdown = document.getElementById('profileDropdown');
+
+            if (userProfile && dropdown) {
+                userProfile.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('show');
+                });
+
+                document.addEventListener('click', function () {
+                    dropdown.classList.remove('show');
+                });
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        function setupLogout() {
+            document.getElementById('logoutBtn').addEventListener('click', function (e) {
+                e.preventDefault();
+                logout();
+            });
+        }
+
+        function formatDateOnly(dateValue) {
+            if (!dateValue) return 'Not set';
+            const date = new Date(dateValue);
+            if (Number.isNaN(date.getTime())) return dateValue;
+            return date.toLocaleDateString('en-GB');
+        }
+
+        let portfolioFiles = [];
+
+        function renderPortfolio() {
+            const grid = document.getElementById('portfolioGrid');
+            const empty = document.getElementById('portfolioEmpty');
+            grid.innerHTML = '';
+
+            if (!portfolioFiles.length) {
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+
+            portfolioFiles.forEach((filePath, index) => {
+                const item = document.createElement('div');
+                item.className = 'portfolio-item';
+                const lowerPath = String(filePath).toLowerCase();
+                const isVideo = lowerPath.endsWith('.mp4');
+                item.innerHTML = isVideo
+                    ? `<video controls src="${filePath}"></video><div class="portfolio-meta">Video ${index + 1}</div>`
+                    : `<img src="${filePath}" alt="Portfolio media ${index + 1}"><div class="portfolio-meta">Image ${index + 1}</div>`;
+                grid.appendChild(item);
+            });
+        }
+
+        // ==================== PROFILE FUNCTIONS ====================
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/profile');
+
+                if (response.status === 401) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load profile');
+                }
+
+                // Hide spinner, show content
+                document.getElementById('loadingSpinner').classList.add('hidden');
+                document.getElementById('profileContent').classList.remove('hidden');
+
+                const artist = data.artist;
+                const stats = data.stats;
+                portfolioFiles = Array.isArray(artist.portfolio_files) ? artist.portfolio_files : [];
+
+                // Update initials
+                const initials = (artist.first_name?.[0] || '') + (artist.last_name?.[0] || '');
+                const sidebarLogo = document.getElementById('sidebarLogo');
+                if (sidebarLogo) {
+                    sidebarLogo.innerHTML = '';
+                    const brandLogo = document.createElement('img');
+                    brandLogo.src = '/static/logo.png';
+                    brandLogo.alt = 'CreoVibe';
+                    brandLogo.style.width = '100%';
+                    brandLogo.style.height = '100%';
+                    brandLogo.style.objectFit = 'cover';
+                    brandLogo.style.borderRadius = '50%';
+                    brandLogo.onerror = () => { sidebarLogo.textContent = 'CV'; };
+                    sidebarLogo.appendChild(brandLogo);
+                }
+                document.getElementById('navProfilePic').textContent = initials;
+                document.getElementById('profileAvatar').textContent = initials;
+                if (artist.profile_pic) {
+                    document.getElementById('navProfilePic').style.backgroundImage = `url('${artist.profile_pic}')`;
+                    document.getElementById('navProfilePic').style.backgroundSize = 'cover';
+                    document.getElementById('navProfilePic').style.backgroundPosition = 'center';
+                    document.getElementById('navProfilePic').style.color = 'transparent';
+
+                    document.getElementById('profileAvatar').style.backgroundImage = `url('${artist.profile_pic}')`;
+                    document.getElementById('profileAvatar').style.backgroundSize = 'cover';
+                    document.getElementById('profileAvatar').style.backgroundPosition = 'center';
+                    document.getElementById('profileAvatar').style.color = 'transparent';
+                } else {
+                    document.getElementById('navProfilePic').style.backgroundImage = '';
+                    document.getElementById('profileAvatar').style.backgroundImage = '';
+                    document.getElementById('navProfilePic').style.color = '';
+                    document.getElementById('profileAvatar').style.color = '';
+                }
+
+                // Update profile info
+                document.getElementById('profileName').textContent = `${artist.first_name || ''} ${artist.last_name || ''}`.trim();
+                document.getElementById('profileCategory').textContent = artist.category || 'Not set';
+                document.getElementById('profileEmail').textContent = artist.username || 'Not set';
+                document.getElementById('profilePhone').textContent = artist.phone_number || 'Not set';
+
+
+                // Update details
+                document.getElementById('detailName').textContent = `${artist.first_name || ''} ${artist.last_name || ''}`.trim() || 'Not set';
+                document.getElementById('detailUsername').textContent = artist.username || 'Not set';
+                document.getElementById('detailGender').textContent = artist.gender || 'Not set';
+                document.getElementById('detailDob').textContent = formatDateOnly(artist.dob);
+                document.getElementById('detailEmail').textContent = artist.email || artist.username || 'Not set';
+                document.getElementById('detailPhone').textContent = artist.phone_number || 'Not set';
+
+                // Professional
+                document.getElementById('detailCategory').textContent = artist.category || artist.category_name || 'Not set';
+                document.getElementById('detailExperience').textContent = artist.experience_years != null ? `${artist.experience_years} yr${artist.experience_years !== 1 ? 's' : ''}` : 'Not set';
+                document.getElementById('detailPrice').textContent = artist.price_per_hour != null ? `₹${Number(artist.price_per_hour).toLocaleString('en-IN')} / hr` : 'Not set';
+                const wStart = artist.working_start_time || '';
+                const wEnd = artist.working_end_time || '';
+                document.getElementById('detailWorkingHours').textContent = (wStart && wEnd) ? `${wStart} – ${wEnd}` : 'Not set';
+                document.getElementById('detailVerification').textContent = artist.verification_status || 'Pending';
+
+                // Location
+                document.getElementById('detailState').textContent = artist.state_name || 'Not set';
+                document.getElementById('detailCity').textContent = artist.city_name || 'Not set';
+                document.getElementById('detailPincode').textContent = artist.pincode || 'Not set';
+
+                // Bank details
+                document.getElementById('detailBankName').textContent = artist.bank_name || 'Not set';
+                document.getElementById('detailAccountHolder').textContent = artist.account_holder_name || 'Not set';
+                document.getElementById('detailAccountNumber').textContent = artist.bank_account_number || 'Not set';
+                document.getElementById('detailIfsc').textContent = artist.ifsc_code || 'Not set';
+                document.getElementById('detailUpi').textContent = artist.upi_id || 'Not set';
+
+                renderPortfolio();
+
+            } catch (error) {
+                console.error('Profile error:', error);
+                document.getElementById('loadingSpinner').classList.add('hidden');
+
+                const errorDiv = document.getElementById('errorContainer');
+                errorDiv.classList.remove('hidden');
+                errorDiv.innerHTML = `
+            <div class="error-box">
+                <h3><i class="ri-error-warning-line"></i> Error Loading Profile</h3>
+                <p>${error.message}</p>
+                <button onclick="loadProfile()" style="
+                    background: #667eea; 
+                    color: white; 
+                    border: none; 
+                    padding: 10px 20px; 
+                    border-radius: 8px; 
+                    cursor: pointer;
+                    margin-top: 10px;
+                ">
+                    <i class="ri-refresh-line"></i> Retry
+                </button>
+            </div>
+        `;
+            }
+        }
+
+        // ==================== DEACTIVATE ACCOUNT ====================
+        function openDeactivateModal() {
+            document.getElementById('deactivateModalOverlay').classList.add('show');
+        }
+
+        function closeDeactivateModal() {
+            document.getElementById('deactivateModalOverlay').classList.remove('show');
+        }
+
+        async function confirmDeactivate() {
+            const btn = document.getElementById('confirmDeactivateBtn');
+            btn.textContent = 'Deactivating…';
+            btn.disabled = true;
+            try {
+                const resp = await fetch('/api/deactivate', { method: 'POST' });
+                const data = await resp.json();
+                if (data.success) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.error || 'Deactivation failed. Please try again.');
+                    btn.textContent = 'Deactivate';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert('Network error. Please try again.');
+                btn.textContent = 'Deactivate';
+                btn.disabled = false;
+            }
+        }
+
+        // ==================== NOTIFICATION BADGE ====================
+        async function loadNotificationCount() {
+            try {
+                const r = await fetch('/api/notifications/count');
+                if (!r.ok) return;
+                const d = await r.json();
+                const badge = document.getElementById('notifCountBadge');
+                if (!badge) return;
+                const count = d.unread || 0;
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (e) { /* silent */ }
+        }
+
+        // ==================== INITIALIZE ================
+        async function init() {
+            const isLoggedIn = await checkLogin();
+            if (!isLoggedIn) return;
+            initSidebar();
+            initProfileDropdown();
+            setupLogout();
+            loadProfile();
+            loadNotificationCount();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>

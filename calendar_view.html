@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar - CreoVibe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #667eea;
+            --accent: #764ba2;
+            --bg: #F5F7FF;
+            --card: #ffffff;
+            --border: #e1e4eb;
+            --text-muted: #777;
+            --sidebar-w: 260px;
+            --sidebar-w-sm: 60px;
+            --topnav-h: 70px;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: var(--bg);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 55%, #5c3691 100%);
+            transition: width 0.25s ease;
+            z-index: 999;
+            overflow: hidden;
+            box-shadow: 4px 0 20px rgba(102, 126, 234, .35);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-w-sm);
+        }
+
+        .sidebar-logo-block {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .15);
+        }
+
+        .logo-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .25);
+            border: 2px solid rgba(255, 255, 255, .50);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            font-family: "Monotype Corsiva", cursive;
+        }
+
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+
+        .sidebar.collapsed .logo-row {
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .sidebar-logo {
+            width: 44px;
+            height: 44px;
+        }
+
+        /* MENU */
+        .sidebar-menu {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .menu-item {
+            padding: 13px 12.5px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 15px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, .80);
+            transition: 0.2s ease;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, .18);
+            color: #ffffff;
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, .25);
+            color: #ffffff;
+            font-weight: 600;
+            border-left: 3px solid #ffffff;
+        }
+
+        .menu-item i {
+            font-size: 22px;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .menu-item {
+            justify-content: center;
+        }
+
+        /* TOP NAVBAR */
+        .topnav {
+            position: fixed;
+            left: var(--sidebar-w);
+            top: 0;
+            height: var(--topnav-h);
+            width: calc(100% - var(--sidebar-w));
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            gap: 8px;
+            z-index: 998;
+            transition: left 0.25s ease, width 0.25s ease;
+            box-shadow: 0 3px 14px rgba(102, 126, 234, .30);
+        }
+
+        .sidebar.collapsed~.topnav {
+            left: var(--sidebar-w-sm);
+            width: calc(100% - var(--sidebar-w-sm));
+        }
+
+        .notif-bell-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+        .notif-count-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            background: #e74c3c;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 16px; height: 16px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 3px;
+            pointer-events: none;
+        }
+        .nav-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .18);
+            border: 1px solid rgba(255, 255, 255, .35);
+            font-size: 22px;
+            color: #ffffff;
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .nav-icon:hover {
+            background: rgba(255, 255, 255, .30);
+        }
+
+        .user-profile {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px 5px 6px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, .18);
+        }
+
+        .profile-pic {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .30);
+            border: 2px solid rgba(255, 255, 255, .60);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .profile-dropdown-arrow {
+            color: rgba(255, 255, 255, .85);
+            font-size: 18px;
+            transition: transform .3s;
+            line-height: 1;
+        }
+
+        .user-profile:hover .profile-dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e1e4eb;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .13);
+            min-width: 190px;
+            display: none;
+            z-index: 1050;
+            overflow: hidden;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+            animation: fadeIn .18s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px) scale(.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dropdown-item {
+            padding: 11px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #f5f7fa;
+            color: var(--primary);
+        }
+
+        .dropdown-item.logout {
+            color: #e74c3c;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fef2f2;
+            color: #c0392b;
+        }
+
+        /* MAIN CONTENT */
+        .dashboard {
+            margin-left: var(--sidebar-w);
+            margin-top: var(--topnav-h);
+            padding: 28px 30px 48px;
+            transition: margin-left 0.25s ease;
+            min-height: calc(100vh - var(--topnav-h));
+        }
+
+        .sidebar.collapsed~.topnav+.dashboard {
+            margin-left: var(--sidebar-w-sm);
+        }
+
+
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            color: #333;
+            margin: 0;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a5ce5;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* Calendar Container */
+        .calendar-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        #calendar {
+            font-family: Inter, Arial, sans-serif;
+        }
+
+        .fc {
+            --fc-border-color: #e1e4eb;
+            --fc-button-bg-color: #667eea;
+            --fc-button-border-color: #667eea;
+            --fc-button-hover-bg-color: #3a5ce5;
+            --fc-button-hover-border-color: #3a5ce5;
+            --fc-button-active-bg-color: #2d4ac8;
+            --fc-button-active-border-color: #2d4ac8;
+            --fc-today-bg-color: rgba(74, 108, 247, 0.1);
+        }
+
+        .fc .fc-toolbar-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .fc .fc-button {
+            padding: 8px 16px;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+        .fc .fc-button-primary {
+            text-transform: capitalize;
+        }
+
+        .fc .fc-daygrid-day-number {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .fc .fc-day-today .fc-daygrid-day-number {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .fc .fc-daygrid-day.selected-date {
+            background: rgba(74, 108, 247, 0.15) !important;
+        }
+
+        .fc-event {
+            border-radius: 6px;
+            border: none;
+            padding: 4px 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .fc-event.booking-confirmed {
+            background: var(--primary);
+            border-left: 4px solid #2d4ac8;
+        }
+
+        .fc-event.booking-completed {
+            background: var(--success);
+            border-left: 4px solid #1e7e34;
+        }
+
+        .fc-event.booking-cancelled {
+            background: var(--danger);
+            border-left: 4px solid #bd2130;
+        }
+
+        .fc-event.booking-reschedule {
+            background: #fd7e14;
+            border-left: 4px solid #e8590c;
+        }
+
+        /* Calendar Sidebar */
+        .calendar-sidebar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-card h3 {
+            font-size: 18px;
+            color: #333;
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upcoming-events {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .event-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .event-item {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+            background: #f8f9fa;
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .event-item:hover {
+            transform: translateX(5px);
+            background: #e9ecef;
+        }
+
+        .event-item.confirmed {
+            border-left-color: var(--primary);
+        }
+
+        .event-item.completed {
+            border-left-color: var(--success);
+        }
+
+        .event-item.cancelled {
+            border-left-color: var(--danger);
+        }
+
+        .event-item.reschedule {
+            border-left-color: #fd7e14;
+        }
+
+        .event-item.personal {
+            border-left-color: var(--primary);
+        }
+
+        .event-time {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .event-client {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Availability Settings */
+        .availability-form {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .time-input,
+        .form-select,
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .time-input:focus,
+        .form-select:focus,
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .save-btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .selected-date-label {
+            background: rgba(74, 108, 247, 0.1);
+            border: 1px solid rgba(74, 108, 247, 0.3);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        /* Event Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 25px 25px 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .event-details p {
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .event-details strong {
+            color: #333;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-box {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .calendar-sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo-block">
+            <div class="logo-row">
+                <div class="sidebar-logo" id="sidebarLogo">CV</div>
+                <span class="logo-text">CreoVibe</span>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item menu-toggle"><i class="ri-menu-line" id="menuBtn"></i><span>Menu</span></li>
+            <a href="dashboard.html" class="menu-item"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+            <a href="profile.html" class="menu-item"><i class="ri-user-line"></i><span>Profile</span></a>
+            <a href="subscription.html" class="menu-item"><i class="ri-vip-crown-line"></i><span>Subscription</span></a>
+            <a href="calendar_view.html" class="menu-item active"><i
+                    class="ri-calendar-line"></i><span>Calendar</span></a>
+            <a href="booking_details.html" class="menu-item"><i
+                    class="ri-calendar-check-line"></i><span>Bookings</span></a>
+            <a href="earnings.html" class="menu-item"><i class="ri-wallet-3-line"></i><span>Earnings</span></a>
+            <a href="notifications.html" class="menu-item"><i
+                    class="ri-notification-3-line"></i><span>Notifications</span></a>
+            <a href="feedback.html" class="menu-item"><i class="ri-chat-3-line"></i><span>Feedback</span></a>
+        </ul>
+    </div>
+
+    <!-- TOP NAVBAR -->
+    <div class="topnav">
+        <span class="topnav-page-title"
+            style="color:#fff;font-size:20px;font-weight:600;margin-left:8px;">Calendar</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <span class="notif-bell-wrap"><a href="notifications.html" class="nav-icon" id="notifBell"><i class="ri-notification-3-line"></i></a><span class="notif-count-badge" id="notifCountBadge" style="display:none;">0</span></span>
+            <div class="user-profile" id="userProfile">
+                <div class="profile-pic" id="navProfilePic"></div>
+                <div class="profile-dropdown-arrow"><i class="ri-arrow-down-s-line"></i></div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="profile.html" class="dropdown-item"><i class="ri-user-line"></i> My Profile</a>
+                    <a href="#" class="dropdown-item logout" id="logoutBtn"><i class="ri-logout-box-r-line"></i>
+                        Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CALENDAR CONTENT -->
+    <div class="dashboard">
+
+        <div class="spinner" id="loadingSpinner"></div>
+
+        <div id="calendarContent" class="hidden">
+            <div class="calendar-container">
+                <div id="calendar"></div>
+            </div>
+
+            <div class="calendar-sidebar">
+                <!-- Upcoming Bookings (no slots) -->
+                <div class="sidebar-card">
+                    <h3><i class="ri-calendar-event-line"></i> Upcoming Bookings</h3>
+                    <div class="upcoming-events">
+                        <ul class="event-list" id="upcomingEvents"></ul>
+                        <div id="emptyEvents" class="empty-state hidden">
+                            <i class="ri-calendar-line"></i>
+                            <h4>No upcoming bookings</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Working Hours / Availability -->
+                <div class="sidebar-card">
+                    <h3><i class="ri-time-line"></i> Working Hours</h3>
+
+                    <div id="selectedDateLabel" class="selected-date-label hidden">
+                        Selected: <span id="selectedDateText">--</span>
+                    </div>
+
+                    <div class="availability-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Start Time</label>
+                                <input type="time" class="time-input" id="startTime" value="09:00" style="width:100%">
+                            </div>
+                            <div class="form-group">
+                                <label>End Time</label>
+                                <input type="time" class="time-input" id="endTime" value="18:00" style="width:100%">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Slot Type</label>
+                                <select class="form-select" id="slotType">
+                                    <option value="Communication">Communication</option>
+                                    <option value="Performance">Performance</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Price (₹)</label>
+                                <input type="number" class="form-input" id="slotPrice" placeholder="Enter price" min="0"
+                                    step="1">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Apply To</label>
+                            <select class="form-select" id="applyTo">
+                                <option value="selected_date">Selected Date</option>
+                                <option value="this_week">This Week</option>
+                            </select>
+                        </div>
+
+                        <div class="save-btn-container">
+                            <button class="btn btn-primary" id="saveAvailability">
+                                <i class="ri-save-line"></i> Save Availability
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorContainer" class="hidden"></div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Event Details</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="event-details" id="modalBody"></div>
+            </div>
+            <div class="modal-footer" id="modalFooter"></div>
+        </div>
+    </div>
+
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script>
+        // ==================== COMMON FUNCTIONS ====================
+        async function checkLogin() {
+            try {
+                const response = await fetch('/api/check_session');
+                const data = await response.json();
+                if (!data.logged_in) { localStorage.clear(); window.location.href = 'login.html'; return false; }
+                if (!localStorage.getItem('artist_id')) localStorage.setItem('artist_id', data.artist_id);
+                window.__artistProfilePic = data.profile_pic || '';
+                if (data.user_initials) updateUserInitials(data.user_initials, data.profile_pic);
+                return true;
+            } catch (error) { localStorage.clear(); window.location.href = 'login.html'; return false; }
+        }
+
+        function initSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menuBtn');
+            if (menuBtn && sidebar) {
+                menuBtn.onclick = () => {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                };
+                if (localStorage.getItem('sidebarCollapsed') === 'true') sidebar.classList.add('collapsed');
+            }
+        }
+
+        function initProfileDropdown() {
+            const userProfile = document.getElementById('userProfile');
+            const dropdown = document.getElementById('profileDropdown');
+            userProfile.addEventListener('click', function (e) { e.stopPropagation(); dropdown.classList.toggle('show'); });
+            document.addEventListener('click', function () { dropdown.classList.remove('show'); });
+        }
+
+        async function logout() {
+            try { await fetch('/api/logout', { method: 'POST' }); } catch (e) { }
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // ==================== CALENDAR FUNCTIONS ====================
+        let calendar;
+        let selectedDate = null;
+        let allEvents = []; // Store all events for reference
+
+        async function loadCalendarData() {
+            try {
+                const [calResponse, profileResponse] = await Promise.all([
+                    fetch('/api/calendar'),
+                    fetch('/api/profile')
+                ]);
+                if (calResponse.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
+                const data = await calResponse.json();
+                if (!data.success) throw new Error(data.error || 'Failed to load calendar data');
+
+                // Get working hours from artist_table
+                let workingStart = '09:00', workingEnd = '21:00';
+                if (profileResponse.ok) {
+                    const profileData = await profileResponse.json();
+                    if (profileData.success && profileData.artist) {
+                        workingStart = profileData.artist.working_start_time || workingStart;
+                        workingEnd = profileData.artist.working_end_time || workingEnd;
+                    }
+                }
+                window._workingStart = workingStart;
+                window._workingEnd = workingEnd;
+
+                document.getElementById('loadingSpinner').classList.add('hidden');
+                document.getElementById('calendarContent').classList.remove('hidden');
+
+                allEvents = data.events || [];
+                initCalendar(allEvents);
+
+                // Only show booking_table records in upcoming — NOT slots
+                const bookingEvents = allEvents.filter(e => e.type === 'booking');
+                updateUpcomingEvents(bookingEvents);
+
+                loadAvailabilitySettings(data.availability || { start_time: workingStart, end_time: workingEnd });
+
+            } catch (error) {
+                console.error('Calendar error:', error);
+                document.getElementById('loadingSpinner').classList.add('hidden');
+                const errorDiv = document.getElementById('errorContainer');
+                errorDiv.classList.remove('hidden');
+                errorDiv.innerHTML = `
+                    <div class="error-box">
+                        <h3><i class="ri-error-warning-line"></i> Error Loading Calendar</h3>
+                        <p>${error.message}</p>
+                        <button onclick="loadCalendarData()" style="background:#667eea;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">
+                            <i class="ri-refresh-line"></i> Retry
+                        </button>
+                    </div>`;
+            }
+        }
+
+        function initCalendar(events) {
+            const calendarEl = document.getElementById('calendar');
+
+            if (calendar) {
+                calendar.destroy();
+            }
+
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'title',
+                    center: '',
+                    right: 'today prev,next'
+                },
+                firstDay: 1,
+                height: 650,
+                businessHours: {
+                    startTime: window._workingStart || '09:00',
+                    endTime: window._workingEnd || '21:00'
+                },
+                editable: false,
+                selectable: true,
+                dayMaxEvents: 3,
+                events: events.map(event => ({
+                    id: event.id,
+                    title: event.title,
+                    start: event.start,
+                    end: event.end,
+                    extendedProps: {
+                        type: event.type || 'personal',
+                        status: event.status || 'confirmed',
+                        bookingType: event.booking_type || 'Event',
+                        clientName: event.client_name,
+                        clientEmail: event.client_email,
+                        clientPhone: event.client_phone,
+                        location: event.location,
+                        notes: event.notes,
+                        price: event.price,
+                        slotType: event.slot_type,
+                        slotId: event.slot_id
+                    },
+                    backgroundColor: getEventColor(event),
+                    borderColor: getEventBorderColor(event),
+                    classNames: [getEventClass(event)],
+                    textColor: 'white'
+                })),
+                dateClick: function (info) {
+                    selectedDate = info.dateStr;
+                    document.querySelectorAll('.fc-daygrid-day.selected-date').forEach(el => el.classList.remove('selected-date'));
+                    info.dayEl.classList.add('selected-date');
+                    const label = document.getElementById('selectedDateLabel');
+                    const text = document.getElementById('selectedDateText');
+                    const d = new Date(info.dateStr + 'T00:00:00');
+                    text.textContent = d.toLocaleDateString('en-IN', { weekday: 'long', day: '2-digit', month: 'short', year: 'numeric' });
+                    label.classList.remove('hidden');
+                },
+                eventClick: function (info) {
+                    showEventDetails(info.event);
+                }
+            });
+
+            calendar.render();
+        }
+
+        function getEventClass(event) {
+            if (event.type === 'slot') return 'fc-slot-event';
+            return `booking-${event.status || 'confirmed'}`;
+        }
+
+        // Communication → primary (#667eea), Event → accent (#764ba2), Blocked → gray
+        function getEventColor(event) {
+            if (event.type === 'slot') {
+                if (event.status === 'Blocked') return '#6c757d';
+                return event.slot_type === 'Communication' ? '#667eea' : '#764ba2';
+            }
+            switch (event.status) {
+                case 'confirmed': return '#667eea';
+                case 'completed': return '#28a745';
+                case 'cancelled': return '#dc3545';
+                case 'reschedule': return '#fd7e14';
+                default: return '#667eea';
+            }
+        }
+
+        function getEventBorderColor(event) {
+            if (event.type === 'slot') {
+                if (event.status === 'Blocked') return '#545b62';
+                return event.slot_type === 'Communication' ? '#2d4ac8' : '#6b3ac7';
+            }
+            switch (event.status) {
+                case 'confirmed': return '#2d4ac8';
+                case 'completed': return '#1e7e34';
+                case 'cancelled': return '#bd2130';
+                case 'reschedule': return '#e8590c';
+                default: return '#2d4ac8';
+            }
+        }
+
+        // Only booking_table records in upcoming — never slots
+        function updateUpcomingEvents(events) {
+            const upcomingList = document.getElementById('upcomingEvents');
+            const emptyState = document.getElementById('emptyEvents');
+            const today = new Date();
+
+            const upcoming = events
+                .filter(event => new Date(event.start) >= today)
+                .sort((a, b) => new Date(a.start) - new Date(b.start))
+                .slice(0, 5);
+
+            if (upcoming.length === 0) {
+                upcomingList.style.display = 'none';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            upcomingList.style.display = 'block';
+            upcomingList.innerHTML = '';
+
+            upcoming.forEach(event => {
+                const eventDate = new Date(event.start);
+                const timeString = eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                const dateString = eventDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+                const li = document.createElement('li');
+                li.className = `event-item ${event.status || 'confirmed'}`;
+                li.innerHTML = `
+                    <div class="event-time"><i class="ri-time-line"></i> ${dateString} at ${timeString}</div>
+                    <div class="event-title">${event.title}</div>
+                    ${event.client_name ? `<div class="event-client">With: ${event.client_name}</div>` : ''}
+                `;
+
+                li.addEventListener('click', () => {
+                    const calendarEvent = calendar.getEventById(event.id);
+                    if (calendarEvent) showEventDetails(calendarEvent);
+                });
+
+                upcomingList.appendChild(li);
+            });
+        }
+
+        function loadAvailabilitySettings(availability) {
+            if (availability) {
+                document.getElementById('startTime').value = availability.start_time || '09:00';
+                document.getElementById('endTime').value = availability.end_time || '18:00';
+            }
+        }
+
+        function showEventDetails(event) {
+            const modal = document.getElementById('eventModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalFooter = document.getElementById('modalFooter');
+
+            const ep = event.extendedProps;
+            const startDate = event.start ? new Date(event.start) : null;
+            const endDate = event.end ? new Date(event.end) : null;
+
+            const timeOpts = { hour: '2-digit', minute: '2-digit', hour12: true };
+            const dateOpts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+            const startStr = startDate ? startDate.toLocaleString('en-US', { ...dateOpts, ...timeOpts }) : 'N/A';
+            const endTimeStr = endDate ? endDate.toLocaleTimeString('en-US', timeOpts) : 'N/A';
+
+            let detailsHTML = '';
+
+            if (ep.type === 'slot') {
+                // Slot modal: Time, Type, Status, Price
+                const startTimeOnly = startDate ? startDate.toLocaleTimeString('en-US', timeOpts) : '';
+                const dateOnly = startDate ? startDate.toLocaleDateString('en-US', dateOpts) : '';
+
+                modalTitle.textContent = 'Slot Details';
+                detailsHTML = `
+                    <p><strong>Date:</strong> ${dateOnly}</p>
+                    <p><strong>Time:</strong> ${startTimeOnly} - ${endTimeStr}</p>
+                    <p><strong>Type:</strong> ${ep.slotType || 'Event'}</p>
+                    <p><strong>Status:</strong> ${ep.status || 'Available'}</p>
+                    <p><strong>Price:</strong> ₹${ep.price || 0}</p>
+                `;
+
+                // Show DELETE button only for Available slots
+                modalFooter.innerHTML = '';
+                if (ep.status === 'Available' && ep.slotId) {
+                    modalFooter.style.display = 'flex';
+                    modalFooter.innerHTML = `
+                        <button class="btn btn-danger" onclick="deleteSlot(${ep.slotId})">
+                            <i class="ri-delete-bin-line"></i> Delete Slot
+                        </button>
+                    `;
+                } else {
+                    modalFooter.style.display = 'none';
+                }
+            } else {
+                // Booking modal
+                modalTitle.textContent = event.title;
+                detailsHTML = `
+                    <p><strong>Event:</strong> ${event.title}</p>
+                    <p><strong>Start:</strong> ${startStr}</p>
+                    <p><strong>End:</strong> ${endDate ? endDate.toLocaleString('en-US', { ...dateOpts, ...timeOpts }) : 'N/A'}</p>
+                `;
+                if (ep.type === 'booking') {
+                    detailsHTML += `
+                        <p><strong>Type:</strong> ${ep.bookingType || 'Event'}</p>
+                        <p><strong>Status:</strong> ${ep.status}</p>
+                        ${ep.clientName ? `<p><strong>Client:</strong> ${ep.clientName}</p>` : ''}
+                        ${ep.location ? `<p><strong>Location:</strong> ${ep.location}</p>` : ''}
+                        ${ep.price ? `<p><strong>Price:</strong> ₹${ep.price}</p>` : ''}
+                        ${ep.notes ? `<p><strong>Notes:</strong> ${ep.notes}</p>` : ''}
+                    `;
+                }
+                modalFooter.innerHTML = '';
+                modalFooter.style.display = 'none';
+            }
+
+            modalBody.innerHTML = detailsHTML;
+            modal.style.display = 'flex';
+        }
+
+        // ==================== DELETE SLOT ====================
+        async function deleteSlot(slotId) {
+            if (!confirm('Delete this available slot?')) return;
+            try {
+                const response = await fetch(`/api/delete_slot/${slotId}`, { method: 'DELETE' });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Failed to delete slot');
+                }
+                closeModal();
+                loadCalendarData();
+            } catch (error) {
+                alert(error.message || 'Failed to delete slot');
+            }
+        }
+
+        // ==================== USER INITIALS ====================
+        function updateUserInitials(initials, profilePic) {
+            const sidebarLogo = document.getElementById('sidebarLogo');
+            if (sidebarLogo) {
+                sidebarLogo.innerHTML = '';
+                const brandLogo = document.createElement('img');
+                brandLogo.src = '/static/logo.png';
+                brandLogo.alt = 'CreoVibe';
+                brandLogo.style.width = '100%';
+                brandLogo.style.height = '100%';
+                brandLogo.style.objectFit = 'cover';
+                brandLogo.style.borderRadius = '50%';
+                brandLogo.onerror = () => { sidebarLogo.textContent = 'CV'; };
+                sidebarLogo.appendChild(brandLogo);
+            }
+            const navProfile = document.getElementById('navProfilePic');
+            if (!navProfile) return;
+            const resolvedInitials = (initials || 'CV').toUpperCase();
+            const pic = profilePic || window.__artistProfilePic || '';
+            if (pic) {
+                navProfile.textContent = '';
+                navProfile.style.backgroundImage = `url('${pic}')`;
+                navProfile.style.backgroundSize = 'cover';
+                navProfile.style.backgroundPosition = 'center';
+                navProfile.style.color = 'transparent';
+            } else {
+                navProfile.style.backgroundImage = '';
+                navProfile.style.backgroundSize = '';
+                navProfile.style.backgroundPosition = '';
+                navProfile.style.color = '';
+                navProfile.textContent = resolvedInitials;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('eventModal').style.display = 'none';
+        }
+
+        // ==================== SLOT TYPE / PRICE VALIDATION ====================
+        document.addEventListener('DOMContentLoaded', function () {
+            const slotTypeSelect = document.getElementById('slotType');
+            const priceInput = document.getElementById('slotPrice');
+            slotTypeSelect.addEventListener('change', function () {
+                if (this.value === 'Communication') {
+                    priceInput.setAttribute('max', '500');
+                    if (Number(priceInput.value) > 500) priceInput.value = 500;
+                } else {
+                    priceInput.removeAttribute('max');
+                }
+            });
+            priceInput.addEventListener('input', function () {
+                if (slotTypeSelect.value === 'Communication' && Number(this.value) > 500) {
+                    this.value = 500;
+                    alert('Communication price cannot exceed ₹500');
+                }
+            });
+        });
+
+        // ==================== EVENT LISTENERS ====================
+        function setupEventListeners() {
+            document.getElementById('logoutBtn').addEventListener('click', function (e) { e.preventDefault(); logout(); });
+
+            document.getElementById('saveAvailability').addEventListener('click', async function () {
+                const startTime = document.getElementById('startTime').value;
+                const endTime = document.getElementById('endTime').value;
+                const slotType = document.getElementById('slotType').value;
+                const price = document.getElementById('slotPrice').value;
+                const applyTo = document.getElementById('applyTo').value;
+
+                if (!startTime || !endTime) { alert('Please set both start and end times.'); return; }
+                if (startTime >= endTime) { alert('Start time must be before end time.'); return; }
+                if (!price || Number(price) < 0) { alert('Please enter a valid price.'); return; }
+                if (slotType === 'Communication' && Number(price) > 500) { alert('Communication price cannot exceed ₹500.'); return; }
+                if (applyTo === 'selected_date' && !selectedDate) { alert('Please click on a date in the calendar first.'); return; }
+
+                try {
+                    const response = await fetch('/api/availability', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            start_time: startTime,
+                            end_time: endTime,
+                            slot_type: slotType,
+                            price: Number(price),
+                            apply_to: applyTo,
+                            selected_date: selectedDate
+                        })
+                    });
+                    const data = await response.json();
+                    if (response.ok && data.success) {
+                        alert(data.message || 'Availability saved and slots generated!');
+                        loadCalendarData();
+                    } else {
+                        alert(data.error || 'Failed to save availability');
+                    }
+                } catch (error) { alert('Failed to save availability settings'); }
+            });
+
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('eventModal').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
+        }
+
+        // ==================== INITIALIZE ====================
+
+        async function loadNotificationCount() {
+            try {
+                const r = await fetch('/api/notifications/count');
+                if (!r.ok) return;
+                const d = await r.json();
+                const badge = document.getElementById('notifCountBadge');
+                if (!badge) return;
+                const count = d.unread || 0;
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (e) { /* silent */ }
+        }
+        async function init() {
+            const isLoggedIn = await checkLogin();
+            if (!isLoggedIn) return;
+            initSidebar();
+            initProfileDropdown();
+            setupEventListeners();
+            loadCalendarData();
+            loadNotificationCount();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+    <footer class="site-footer" id="siteFooter">
+        <div class="site-footer-inner">
+            <p><span class="footer-brand">CreoVibe</span> &mdash; Artist Booking Platform</p>
+            <p>&copy; 2026 CreoVibe. All rights reserved.</p>
+        </div>
+    </footer>
+    <style>
+        .site-footer {
+            margin-left: var(--sidebar-w, 260px);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: rgba(255, 255, 255, .90);
+            border-top: none;
+            transition: margin-left 0.25s ease;
+        }
+
+        .site-footer-inner {
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .site-footer p {
+            margin: 0;
+        }
+
+        .footer-brand {
+            font-family: "Monotype Corsiva", cursive;
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+    </style>
+    <script>
+        (function () {
+            var sb = document.getElementById('sidebar'), ft = document.getElementById('siteFooter');
+            if (sb && ft) {
+                new MutationObserver(function () {
+                    ft.style.marginLeft = sb.classList.contains('collapsed') ? 'var(--sidebar-w-sm, 60px)' : 'var(--sidebar-w, 260px)';
+                }).observe(sb, { attributes: true, attributeFilter: ['class'] });
+            }
+        })();
+    </script>
+</body>
+
+</html>

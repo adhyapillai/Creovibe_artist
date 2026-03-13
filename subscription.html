@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Subscription - CreoVibe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #667eea;
+            --accent: #764ba2;
+            --bg: #F5F7FF;
+            --card: #ffffff;
+            --border: #e1e4eb;
+            --text-muted: #777;
+            --sidebar-w: 260px;
+            --sidebar-w-sm: 60px;
+            --topnav-h: 70px;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: var(--bg);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 55%, #5c3691 100%);
+            transition: width 0.25s ease;
+            z-index: 999;
+            overflow: hidden;
+            box-shadow: 4px 0 20px rgba(102, 126, 234, .35);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-w-sm);
+        }
+
+        .sidebar-logo-block {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .15);
+        }
+
+        .logo-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .25);
+            border: 2px solid rgba(255, 255, 255, .50);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            font-family: "Monotype Corsiva", cursive;
+        }
+
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+
+        .sidebar.collapsed .logo-row {
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .sidebar-logo {
+            width: 44px;
+            height: 44px;
+        }
+
+        /* MENU */
+        .sidebar-menu {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .menu-item {
+            padding: 13px 12.5px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 15px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, .80);
+            transition: 0.2s ease;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, .18);
+            color: #ffffff;
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, .25);
+            color: #ffffff;
+            font-weight: 600;
+            border-left: 3px solid #ffffff;
+        }
+
+        .menu-item i {
+            font-size: 22px;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .menu-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .menu-item {
+            justify-content: center;
+        }
+
+        /* TOP NAVBAR */
+        .topnav {
+            position: fixed;
+            left: var(--sidebar-w);
+            top: 0;
+            height: var(--topnav-h);
+            width: calc(100% - var(--sidebar-w));
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            gap: 8px;
+            z-index: 998;
+            transition: left 0.25s ease, width 0.25s ease;
+            box-shadow: 0 3px 14px rgba(102, 126, 234, .30);
+        }
+
+        .sidebar.collapsed~.topnav {
+            left: var(--sidebar-w-sm);
+            width: calc(100% - var(--sidebar-w-sm));
+        }
+
+        .notif-bell-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+        .notif-count-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            background: #e74c3c;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            min-width: 16px; height: 16px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 3px;
+            pointer-events: none;
+        }
+        .nav-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .18);
+            border: 1px solid rgba(255, 255, 255, .35);
+            font-size: 22px;
+            color: #ffffff;
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .nav-icon:hover {
+            background: rgba(255, 255, 255, .30);
+        }
+
+        .user-profile {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px 5px 6px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, .18);
+        }
+
+        .profile-pic {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .30);
+            border: 2px solid rgba(255, 255, 255, .60);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .profile-dropdown-arrow {
+            color: rgba(255, 255, 255, .85);
+            font-size: 18px;
+            transition: transform .3s;
+            line-height: 1;
+        }
+
+        .user-profile:hover .profile-dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e1e4eb;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .13);
+            min-width: 190px;
+            display: none;
+            z-index: 1050;
+            overflow: hidden;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+            animation: fadeIn .18s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px) scale(.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dropdown-item {
+            padding: 11px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #f5f7fa;
+            color: var(--primary);
+        }
+
+        .dropdown-item.logout {
+            color: #e74c3c;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fef2f2;
+            color: #c0392b;
+        }
+
+        /* MAIN CONTENT */
+        .dashboard {
+            margin-left: var(--sidebar-w);
+            margin-top: var(--topnav-h);
+            padding: 28px 30px 48px;
+            transition: margin-left 0.25s ease;
+            min-height: calc(100vh - var(--topnav-h));
+        }
+
+        .sidebar.collapsed~.topnav+.dashboard {
+            margin-left: var(--sidebar-w-sm);
+        }
+
+
+
+        /* SUBSCRIPTION SPECIFIC STYLES */
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+
+        .page-header p {
+            color: #666;
+            margin: 0;
+            max-width: 600px;
+        }
+
+        .subscription-status {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-free {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-expired {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .status-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .plans-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 15px;
+            padding: 24px;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .plan-header {
+            margin-bottom: 20px;
+        }
+
+        .plan-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+
+        .plan-price {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .plan-price span {
+            font-size: 16px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 25px 0;
+        }
+
+        .plan-features li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-features li i {
+            color: #28a745;
+            font-size: 18px;
+        }
+
+        .plan-features li.disabled {
+            color: #aaa;
+        }
+
+        .plan-features li.disabled i {
+            color: #ccc;
+        }
+
+        .btn-plan {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-plan-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-plan-primary:hover {
+            background: #3a5ce5;
+        }
+
+        .btn-plan-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-plan-secondary:hover {
+            background: #f8f9fa;
+        }
+
+        .current-plan {
+            background: #f8f9fa;
+            color: #666;
+        }
+
+        .current-plan:hover {
+            background: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        .billing-history {
+            margin-top: 40px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            color: #666;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+
+        .history-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .payment-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a5ce5;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        /* LOADING & ERROR STATES */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-box {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-details {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo-block">
+            <div class="logo-row">
+                <div class="sidebar-logo" id="sidebarLogo">CV</div>
+                <span class="logo-text">CreoVibe</span>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-item menu-toggle"><i class="ri-menu-line" id="menuBtn"></i><span>Menu</span></li>
+            <a href="dashboard.html" class="menu-item">
+                <i class="ri-dashboard-line"></i><span>Dashboard</span>
+            </a>
+            <a href="profile.html" class="menu-item">
+                <i class="ri-user-line"></i><span>Profile</span>
+            </a>
+            <a href="subscription.html" class="menu-item active">
+                <i class="ri-vip-crown-line"></i><span>Subscription</span>
+            </a>
+            <a href="calendar_view.html" class="menu-item">
+                <i class="ri-calendar-line"></i><span>Calendar</span>
+            </a>
+            <a href="booking_details.html" class="menu-item">
+                <i class="ri-calendar-check-line"></i><span>Bookings</span>
+            </a>
+            <a href="earnings.html" class="menu-item">
+                <i class="ri-wallet-3-line"></i><span>Earnings</span>
+            </a>
+            <a href="notifications.html" class="menu-item">
+                <i class="ri-notification-3-line"></i><span>Notifications</span>
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="ri-chat-3-line"></i><span>Feedback</span>
+            </a>
+        </ul>
+    </div>
+
+    <!-- TOP NAVBAR -->
+    <div class="topnav">
+        <span class="topnav-page-title"
+            style="color:#fff;font-size:20px;font-weight:600;margin-left:8px;">Subscription</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <span class="notif-bell-wrap">
+                <a href="notifications.html" class="nav-icon" id="notifBell">
+                    <i class="ri-notification-3-line"></i>
+                </a>
+                <span class="notif-count-badge" id="notifCountBadge" style="display:none;">0</span>
+            </span>
+
+            <!-- User Profile Dropdown -->
+            <div class="user-profile" id="userProfile">
+                <div class="profile-pic" id="navProfilePic"></div>
+                <div class="profile-dropdown-arrow">
+                    <i class="ri-arrow-down-s-line"></i>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="profile.html" class="dropdown-item">
+                        <i class="ri-user-line"></i> My Profile
+                    </a>
+                    <a href="#" class="dropdown-item logout" id="logoutBtn">
+                        <i class="ri-logout-box-r-line"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBSCRIPTION CONTENT -->
+    <div class="dashboard">
+
+        <div class="spinner" id="loadingSpinner"></div>
+
+        <div id="subscriptionContent" class="hidden">
+            <!-- Current Subscription Status -->
+            <div class="subscription-status">
+                <div class="status-header">
+                    <h3 style="margin: 0; color: #333;">Current Subscription</h3>
+                    <span class="status-badge status-active" id="currentStatus">Active</span>
+                </div>
+
+                <div class="status-details">
+                    <div class="status-item">
+                        <div class="status-label">Current Plan</div>
+                        <div class="status-value" id="currentPlan">Pro Plan</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Billing Cycle</div>
+                        <div class="status-value" id="billingCycle">Monthly</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Next Billing Date</div>
+                        <div class="status-value" id="nextBilling">15 Dec 2024</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">Amount</div>
+                        <div class="status-value" id="currentAmount">₹999/month</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Plans -->
+            <h3 style="margin: 30px 0 20px 0; color: #333;">Available Plans</h3>
+            <div class="plans-grid" id="plansGrid"></div>
+
+            <!-- Billing History -->
+            <div class="billing-history">
+                <h3 style="margin: 0 0 20px 0; color: #333;">Billing History</h3>
+                <div class="table-container">
+                    <table class="history-table" id="billingTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billingTableBody">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="emptyBilling" class="empty-state hidden">
+                    <i class="ri-file-list-line"></i>
+                    <h4>No billing history yet</h4>
+                    <p>Your billing history will appear here once you make your first payment.</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons 
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="managePaymentMethods()">
+                    <i class="ri-bank-card-line"></i> Manage Payment Methods
+                </button>
+            </div>-->
+        </div>
+
+        <div id="errorContainer" class="hidden"></div>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        // ==================== COMMON FUNCTIONS ====================
+        async function checkLogin() {
+            try {
+                const response = await fetch('/api/check_session');
+                const data = await response.json();
+
+                if (!data.logged_in) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return false;
+                }
+
+                if (!localStorage.getItem('artist_id')) {
+                    localStorage.setItem('artist_id', data.artist_id);
+                }
+
+                window.__artistProfilePic = data.profile_pic || '';
+                if (data.user_initials) {
+                    updateUserInitials(data.user_initials, data.profile_pic);
+                }
+
+                return true;
+            } catch (error) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return false;
+            }
+        }
+
+        function initSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.getElementById('menuBtn');
+
+            if (menuBtn && sidebar) {
+                menuBtn.onclick = () => {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                };
+
+                if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
+            }
+        }
+
+        // Profile dropdown functionality
+        function initProfileDropdown() {
+            const userProfile = document.getElementById('userProfile');
+            const dropdown = document.getElementById('profileDropdown');
+
+            userProfile.addEventListener('click', function (e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function () {
+                dropdown.classList.remove('show');
+            });
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // ==================== SUBSCRIPTION FUNCTIONS ====================
+        async function loadSubscriptionData() {
+            try {
+                const response = await fetch('/api/subscription');
+
+                if (response.status === 401) {
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load subscription data');
+                }
+
+                // Hide spinner, show content
+                document.getElementById('loadingSpinner').classList.add('hidden');
+                document.getElementById('subscriptionContent').classList.remove('hidden');
+
+                const normalized = normalizeSubscriptionData(data);
+                const subscription = normalized.subscription;
+                const plans = normalized.plans;
+                const billingHistory = normalized.billing_history;
+
+                // Update current subscription status
+                updateSubscriptionStatus(subscription);
+
+                // Render plans based on API data
+                renderPlans(plans, subscription.plan_type);
+
+                // Update billing history table
+                updateBillingHistory(billingHistory);
+
+            } catch (error) {
+                console.error('Subscription error:', error);
+                document.getElementById('loadingSpinner').classList.add('hidden');
+
+                const errorDiv = document.getElementById('errorContainer');
+                errorDiv.classList.remove('hidden');
+                errorDiv.innerHTML = `
+            <div class="error-box">
+                <h3><i class="ri-error-warning-line"></i> Error Loading Subscription</h3>
+                <p>${error.message}</p>
+                <button onclick="loadSubscriptionData()" style="
+                    background: #667eea; 
+                    color: white; 
+                    border: none; 
+                    padding: 10px 20px; 
+                    border-radius: 8px; 
+                    cursor: pointer;
+                    margin-top: 10px;
+                ">
+                    <i class="ri-refresh-line"></i> Retry
+                </button>
+            </div>
+        `;
+            }
+        }
+
+        function normalizePlanType(name = '') {
+            const key = String(name).toLowerCase().trim();
+            if (key.includes('basic')) return 'basic';
+            if (key.includes('premium')) return 'premium';
+            if (key === 'pro' || key.includes(' pro')) return 'pro';
+            return key || 'basic';
+        }
+
+        function normalizeSubscriptionData(data) {
+            const plans = Array.isArray(data.plans) ? data.plans : [];
+            const current = data.subscription || data.current_subscription || null;
+
+            const _durationLabels = { 30: '1 Month', 90: '3 Months', 180: '6 Months' };
+            const mappedPlans = plans.map((p) => {
+                const days = Number(p.Duration_Days ?? p.duration_days ?? 30);
+                return {
+                    plan_id: p.Plan_ID ?? p.plan_id ?? null,
+                    plan_type: p.Plan_Type ?? p.plan_type ?? normalizePlanType(p.Plan_Name ?? p.plan_name ?? ''),
+                    plan_name: p.Plan_Name ?? p.plan_name ?? 'Plan',
+                    amount: Number(p.Amount ?? p.amount ?? 0),
+                    duration_days: days,
+                    duration_label: p.duration_label ?? _durationLabels[days] ?? `${days} Days`,
+                    features: p.Features ?? p.features ?? ''
+                };
+            });
+
+            let subscription = current;
+            if (!subscription) {
+                const defaultPlan = mappedPlans.length ? mappedPlans[0] : { plan_name: 'Basic', amount: 0, duration_days: 30 };
+                subscription = {
+                    plan_name: defaultPlan.plan_name,
+                    plan_type: normalizePlanType(defaultPlan.plan_name),
+                    billing_cycle: defaultPlan.duration_days >= 365 ? 'yearly' : 'monthly',
+                    next_billing_date: null,
+                    amount: defaultPlan.amount,
+                    status: 'active'
+                };
+            } else {
+                subscription = {
+                    plan_name: subscription.plan_name || subscription.Plan_Name || 'Active Plan',
+                    plan_type: subscription.plan_type || normalizePlanType(subscription.plan_name || subscription.Plan_Name || ''),
+                    billing_cycle: subscription.billing_cycle || 'monthly',
+                    next_billing_date: subscription.next_billing_date || null,
+                    amount: Number(subscription.amount || 0),
+                    status: subscription.status || 'active',
+                    trial_expired: !!subscription.trial_expired,
+                    requires_paid_plan: !!subscription.requires_paid_plan
+                };
+            }
+
+            const billing_history = Array.isArray(data.billing_history) ? data.billing_history : [];
+
+            return { plans: mappedPlans, subscription, billing_history };
+        }
+
+        function updateSubscriptionStatus(subscription) {
+            document.getElementById('currentPlan').textContent = subscription.plan_name;
+            document.getElementById('billingCycle').textContent = subscription.billing_cycle;
+            document.getElementById('nextBilling').textContent = formatDate(subscription.next_billing_date);
+            document.getElementById('currentAmount').textContent = `₹${subscription.amount}/${subscription.billing_cycle === 'yearly' ? 'year' : 'month'}`;
+
+            const statusElement = document.getElementById('currentStatus');
+            statusElement.textContent = subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1);
+            statusElement.className = `status-badge status-${subscription.status}`;
+        }
+
+        function getPlanFeatures(features) {
+            if (!features) return ['Plan details available in subscription terms'];
+            if (Array.isArray(features)) return features;
+            return String(features)
+                .split(/[,\n|]+/)
+                .map(x => x.trim())
+                .filter(Boolean);
+        }
+
+        function renderPlans(plans, currentPlanType) {
+            const container = document.getElementById('plansGrid');
+            container.innerHTML = '';
+
+            if (!plans.length) {
+                container.innerHTML = '<div class="plan-card"><div class="plan-header"><h4 class="plan-name">No plans available</h4></div></div>';
+                return;
+            }
+
+            plans.forEach((plan) => {
+                const planType = plan.plan_type || normalizePlanType(plan.plan_name);
+                const isCurrent = planType === currentPlanType;
+                const features = getPlanFeatures(plan.features);
+                const cycle = plan.duration_days >= 365 ? 'year' : 'month';
+
+                const card = document.createElement('div');
+                card.className = 'plan-card';
+                card.innerHTML = `
+            <div class="plan-header">
+                <h4 class="plan-name">${plan.plan_name}</h4>
+                <p class="plan-price">₹${Number(plan.amount).toFixed(0)}<span> / ${plan.duration_label || cycle}</span></p>
+            </div>
+            <ul class="plan-features">
+                ${features.map((f) => `<li><i class="ri-check-line"></i> ${f}</li>`).join('')}
+            </ul>
+            <button class="btn-plan btn-plan-primary ${isCurrent ? 'current-plan' : ''}" ${isCurrent ? 'disabled' : ''}>
+                ${isCurrent ? '<i class="ri-check-line"></i> Current Plan' : 'Switch Plan'}
+            </button>
+        `;
+
+                const btn = card.querySelector('button');
+                if (!isCurrent) {
+                    btn.addEventListener('click', () => selectPlan(planType, plan.plan_id, btn));
+                }
+
+                container.appendChild(card);
+            });
+        }
+
+        function updateBillingHistory(billingHistory) {
+            const tableBody = document.getElementById('billingTableBody');
+            const emptyState = document.getElementById('emptyBilling');
+
+            if (billingHistory.length === 0) {
+                tableBody.style.display = 'none';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            tableBody.style.display = 'table-row-group';
+            tableBody.innerHTML = '';
+
+            billingHistory.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+            <td>${formatDate(item.date)}</td>
+            <td>${item.description}</td>
+            <td>₹${Number(item.amount || 0).toFixed(2)}</td>
+            <td>${item.payment_method || 'N/A'}</td>
+            <td><span class="payment-status ${item.status}">${(item.status || 'paid').charAt(0).toUpperCase() + (item.status || 'paid').slice(1)}</span></td>
+        `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateUserInitials(initials, profilePic) {
+            const sidebarLogo = document.getElementById('sidebarLogo');
+            if (sidebarLogo) {
+                sidebarLogo.innerHTML = '';
+                const brandLogo = document.createElement('img');
+                brandLogo.src = '/static/logo.png';
+                brandLogo.alt = 'CreoVibe';
+                brandLogo.style.width = '100%';
+                brandLogo.style.height = '100%';
+                brandLogo.style.objectFit = 'cover';
+                brandLogo.style.borderRadius = '50%';
+                brandLogo.onerror = () => { sidebarLogo.textContent = 'CV'; };
+                sidebarLogo.appendChild(brandLogo);
+            }
+
+            const navProfile = document.getElementById('navProfilePic');
+            if (!navProfile) return;
+
+            const resolvedInitials = (initials || 'CV').toUpperCase();
+            const pic = profilePic || window.__artistProfilePic || '';
+            if (pic) {
+                navProfile.textContent = '';
+                navProfile.style.backgroundImage = `url('${pic}')`;
+                navProfile.style.backgroundSize = 'cover';
+                navProfile.style.backgroundPosition = 'center';
+                navProfile.style.color = 'transparent';
+            } else {
+                navProfile.style.backgroundImage = '';
+                navProfile.style.backgroundSize = '';
+                navProfile.style.backgroundPosition = '';
+                navProfile.style.color = '';
+                navProfile.textContent = resolvedInitials;
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        async function selectPlan(planType, planId, buttonEl) {
+            if (!confirm('Proceed to payment for selected plan?')) return;
+
+            const originalText = buttonEl.innerHTML;
+            buttonEl.innerHTML = '<i class="ri-loader-4-line spin"></i> Processing...';
+            buttonEl.disabled = true;
+
+            try {
+                const orderResp = await fetch('/api/create_order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ plan_type: planType, plan_id: planId })
+                });
+                const orderData = await orderResp.json();
+                if (!orderData.success) {
+                    throw new Error(orderData.error || 'Failed to initialize payment');
+                }
+
+                const rzp = new Razorpay({
+                    key: orderData.key_id,
+                    amount: orderData.amount,
+                    currency: orderData.currency || 'INR',
+                    name: 'CreoVibe',
+                    description: `${orderData.plan_name} Subscription`,
+                    order_id: orderData.order_id,
+                    handler: async function (response) {
+                        const verifyResp = await fetch('/api/subscription/verify_payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                plan_type: planType,
+                                plan_id: planId,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        });
+
+                        const verifyData = await verifyResp.json();
+                        if (!verifyData.success) {
+                            throw new Error(verifyData.error || 'Payment verification failed');
+                        }
+
+                        alert('Payment Successful');
+                        await loadSubscriptionData();
+                    },
+                    modal: {
+                        ondismiss: function () {
+                            buttonEl.innerHTML = originalText;
+                            buttonEl.disabled = false;
+                        }
+                    }
+                });
+
+                rzp.open();
+                return;
+            } catch (error) {
+                const errorDiv = document.getElementById('errorContainer');
+                errorDiv.classList.remove('hidden');
+                errorDiv.innerHTML = `
+            <div class="error-box">
+                <p>${error.message}</p>
+            </div>
+        `;
+            } finally {
+                buttonEl.innerHTML = originalText;
+                buttonEl.disabled = false;
+            }
+        }
+
+        /*function managePaymentMethods() {
+            const currentMethod = localStorage.getItem('payment_method') || 'Card ending in 4242';
+            const updatedMethod = prompt('Update payment method:', currentMethod);
+            if (updatedMethod === null) return;
+
+            if (!updatedMethod.trim()) {
+                alert('Payment method cannot be empty.');
+                return;
+            }
+
+            localStorage.setItem('payment_method', updatedMethod.trim());
+            alert('Payment method updated successfully.');
+        }*/
+
+        // ==================== EVENT LISTENERS ====================
+        function setupEventListeners() {
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', function (e) {
+                e.preventDefault();
+                logout();
+            });
+        }
+
+        // ==================== INITIALIZE ====================
+
+        async function loadNotificationCount() {
+            try {
+                const r = await fetch('/api/notifications/count');
+                if (!r.ok) return;
+                const d = await r.json();
+                const badge = document.getElementById('notifCountBadge');
+                if (!badge) return;
+                const count = d.unread || 0;
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (e) { /* silent */ }
+        }
+        async function init() {
+            const isLoggedIn = await checkLogin();
+            if (!isLoggedIn) return;
+
+            initSidebar();
+            initProfileDropdown();
+            setupEventListeners();
+            loadSubscriptionData();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+    <footer class="site-footer" id="siteFooter">
+        <div class="site-footer-inner">
+            <p><span class="footer-brand">CreoVibe</span> &mdash; Artist Booking Platform</p>
+            <p>&copy; 2026 CreoVibe. All rights reserved.</p>
+        </div>
+    </footer>
+    <style>
+        .site-footer {
+            margin-left: var(--sidebar-w, 260px);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: rgba(255, 255, 255, .90);
+            border-top: none;
+            transition: margin-left 0.25s ease;
+        }
+
+        .site-footer-inner {
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .site-footer p {
+            margin: 0;
+        }
+
+        .footer-brand {
+            font-family: "Monotype Corsiva", cursive;
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+    </style>
+    <script>
+        (function () {
+            var sb = document.getElementById('sidebar'), ft = document.getElementById('siteFooter');
+            if (sb && ft) {
+                new MutationObserver(function () {
+                    ft.style.marginLeft = sb.classList.contains('collapsed') ? 'var(--sidebar-w-sm, 60px)' : 'var(--sidebar-w, 260px)';
+                }).observe(sb, { attributes: true, attributeFilter: ['class'] });
+            }
+        })();
+    </script>
+</body>
+
+</html>

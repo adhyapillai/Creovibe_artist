@@ -1,0 +1,35 @@
+<header class="site-header">
+    <div class="site-header-inner">
+        <h1 id="pageTitle">CreoVibe</h1>
+    </div>
+</header>
+<script>
+(function() {
+    // Dynamic page title mapping based on the current URL
+    var pageTitleMap = {
+        'dashboard': 'Dashboard',
+        'calendar_view': 'Calendar',
+        'calendar': 'Calendar',
+        'profile': 'Profile',
+        'edit_profile': 'Edit Profile',
+        'booking_details': 'Bookings',
+        'bookings': 'Bookings',
+        'earnings': 'Earnings',
+        'subscription': 'Subscription',
+        'notifications': 'Notifications',
+        'feedback': 'Feedback',
+        'change_password': 'Change Password',
+        'client_profile': 'Client Profile'
+    };
+
+    var path = window.location.pathname.replace(/^\//, '').replace(/\.html$/, '').toLowerCase();
+    // Handle nested paths - take the last segment
+    var segments = path.split('/');
+    var lastSegment = segments[segments.length - 1] || 'dashboard';
+
+    var titleEl = document.getElementById('pageTitle');
+    if (titleEl && pageTitleMap[lastSegment]) {
+        titleEl.textContent = pageTitleMap[lastSegment];
+    }
+})();
+</script>

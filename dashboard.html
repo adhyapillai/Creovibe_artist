@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Artist Dashboard - CreoVibe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #667eea;
+      --accent: #764ba2;
+      --bg: #F5F7FF;
+      --card: #ffffff;
+      --border: #e1e4eb;
+      --text-muted: #777;
+      --sidebar-w: 260px;
+      --sidebar-w-sm: 60px;
+      --topnav-h: 70px;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: var(--bg);
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 55%, #5c3691 100%);
+      transition: width 0.25s ease;
+      z-index: 999;
+      overflow: hidden;
+      box-shadow: 4px 0 20px rgba(102, 126, 234, .35);
+    }
+
+    .sidebar.collapsed {
+      width: var(--sidebar-w-sm);
+    }
+
+    .sidebar-logo-block {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .15);
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .sidebar-logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .25);
+      border: 2px solid rgba(255, 255, 255, .50);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      font-family: "Monotype Corsiva", cursive;
+    }
+
+    .sidebar.collapsed .logo-text {
+      display: none;
+    }
+
+    .sidebar.collapsed .logo-row {
+      justify-content: center;
+    }
+
+    .sidebar.collapsed .sidebar-logo {
+      width: 44px;
+      height: 44px;
+    }
+
+    /* MENU */
+    .sidebar-menu {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .menu-item {
+      padding: 13px 12.5px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 15px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, .80);
+      transition: 0.2s ease;
+      text-decoration: none;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, .18);
+      color: #ffffff;
+    }
+
+    .menu-item.active {
+      background: rgba(255, 255, 255, .25);
+      color: #ffffff;
+      font-weight: 600;
+      border-left: 3px solid #ffffff;
+    }
+
+    .menu-item i {
+      font-size: 22px;
+      min-width: 22px;
+      text-align: center;
+    }
+
+    .sidebar.collapsed .menu-item span {
+      display: none;
+    }
+
+    .sidebar.collapsed .menu-item {
+      justify-content: center;
+    }
+
+    /* TOP NAVBAR */
+    .topnav {
+      position: fixed;
+      left: var(--sidebar-w);
+      top: 0;
+      height: var(--topnav-h);
+      width: calc(100% - var(--sidebar-w));
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      gap: 8px;
+      z-index: 998;
+      transition: left 0.25s ease, width 0.25s ease;
+      box-shadow: 0 3px 14px rgba(102, 126, 234, .30);
+    }
+
+    .sidebar.collapsed~.topnav {
+      left: var(--sidebar-w-sm);
+      width: calc(100% - var(--sidebar-w-sm));
+    }
+
+    .nav-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .18);
+      border: 1px solid rgba(255, 255, 255, .35);
+      font-size: 22px;
+      color: #ffffff;
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .nav-icon:hover {
+      background: rgba(255, 255, 255, .30);
+    }
+
+    .user-profile {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px 5px 6px;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .user-profile:hover {
+      background: rgba(255, 255, 255, .18);
+    }
+
+    .profile-pic {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .30);
+      border: 2px solid rgba(255, 255, 255, .60);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .profile-dropdown-arrow {
+      color: rgba(255, 255, 255, .85);
+      font-size: 18px;
+      transition: transform .3s;
+      line-height: 1;
+    }
+
+    .user-profile:hover .profile-dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e1e4eb;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .13);
+      min-width: 190px;
+      display: none;
+      z-index: 1050;
+      overflow: hidden;
+    }
+
+    .profile-dropdown.show {
+      display: block;
+      animation: fadeIn .18s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px) scale(.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .dropdown-item {
+      padding: 11px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #4a5568;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+      background: #f5f7fa;
+      color: var(--primary);
+    }
+
+    .dropdown-item.logout {
+      color: #e74c3c;
+    }
+
+    .dropdown-item.logout:hover {
+      background: #fef2f2;
+      color: #c0392b;
+    }
+
+    /* MAIN CONTENT */
+    .dashboard {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--topnav-h);
+      padding: 28px 30px 48px;
+      transition: margin-left 0.25s ease;
+      min-height: calc(100vh - var(--topnav-h));
+    }
+
+    .sidebar.collapsed~.topnav+.dashboard {
+      margin-left: var(--sidebar-w-sm);
+    }
+
+
+
+    /* CARDS */
+    .card-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      /* fixed 4 columns */
+      gap: 20px;
+      margin-bottom: 30px;
+      margin-top: 22px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease;
+      /*min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;*/
+    }
+
+    /*.card-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+      margin-top: 22px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }*/
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-value {
+      font-size: 36px;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    .card-title {
+      font-size: 14px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /*.card-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+.card-title {
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.card-value {
+  font-size: 32px;
+  font-weight: 700;
+  margin-top: 6px;
+  color: var(--primary);
+}*/
+
+    /* TABLES */
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 0;
+      border-bottom: 2px solid #eee;
+      color: #666;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 12px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .badge-success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge-warning {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .badge-primary {
+      background: #ede9f7;
+      color: #667eea;
+    }
+
+    /* LOADING */
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 50px auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .error-box {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1200px) {
+      .card-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .card-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-logo-block">
+      <div class="logo-row">
+        <div class="sidebar-logo" id="sidebarLogo">CV</div>
+        <span class="logo-text">CreoVibe</span>
+      </div>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li class="menu-item menu-toggle">
+        <i class="ri-menu-line" id="menuBtn"></i>
+        <span>Menu</span>
+      </li>
+
+      <a href="dashboard.html" class="menu-item active">
+        <i class="ri-dashboard-line"></i><span>Dashboard</span>
+      </a>
+
+      <a href="profile.html" class="menu-item">
+        <i class="ri-user-line"></i><span>Profile</span>
+      </a>
+
+      <a href="subscription.html" class="menu-item">
+        <i class="ri-vip-crown-line"></i><span>Subscription</span>
+      </a>
+
+      <a href="calendar_view.html" class="menu-item">
+        <i class="ri-calendar-line"></i><span>Calendar</span>
+      </a>
+
+      <a href="booking_details.html" class="menu-item">
+        <i class="ri-calendar-check-line"></i><span>Bookings</span>
+      </a>
+
+      <a href="earnings.html" class="menu-item">
+        <i class="ri-wallet-3-line"></i><span>Earnings</span>
+      </a>
+
+      <a href="notifications.html" class="menu-item">
+        <i class="ri-notification-3-line"></i><span>Notifications</span>
+      </a>
+
+      <a href="feedback.html" class="menu-item">
+        <i class="ri-chat-3-line"></i><span>Feedback</span>
+      </a>
+    </ul>
+  </div>
+
+  <!-- TOP NAVBAR -->
+  <div class="topnav">
+    <span class="topnav-page-title" style="color:#fff;font-size:20px;font-weight:600;margin-left:8px;">Dashboard</span>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="notif-bell-wrap">
+        <a href="notifications.html" class="nav-icon" id="notifBell">
+          <i class="ri-notification-3-line"></i>
+        </a>
+        <span class="notif-count-badge" id="notifCountBadge" style="display:none;">0</span>
+      </span>
+
+      <div class="user-profile" id="userProfile">
+        <div class="profile-pic" id="navProfilePic"></div>
+        <div class="profile-dropdown-arrow">
+          <i class="ri-arrow-down-s-line"></i>
+        </div>
+
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="profile.html" class="dropdown-item">
+            <i class="ri-user-line"></i> My Profile
+          </a>
+          <a href="#" class="dropdown-item logout" id="logoutBtn">
+            <i class="ri-logout-box-r-line"></i> Logout
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD CONTENT -->
+  <div class="dashboard">
+
+    <div class="text-muted" id="welcomeText">Loading your data...</div>
+
+    <div class="spinner" id="loadingSpinner"></div>
+
+    <div id="dashboardContent" class="hidden">
+
+      <div class="card-row">
+        <div class="card">
+          <div class="card-value" id="totalBookings">0</div>
+          <div class="card-title">Total Bookings</div>
+        </div>
+
+        <div class="card">
+          <div class="card-value" id="totalEarnings">₹0</div>
+          <div class="card-title">Total Earnings</div>
+        </div>
+
+        <div class="card">
+          <div class="card-value" id="avgRating">0.0</div>
+          <div class="card-title">Average Rating</div>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 40px;">Upcoming Bookings</h3>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Client Name</th>
+              <th>Time Slot</th>
+              <th>Slot Type</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="upcomingTable">
+          </tbody>
+        </table>
+
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="booking_details.html" style="color: #667eea; text-decoration: none;">
+            View All Bookings <i class="ri-arrow-right-line"></i>
+          </a>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 40px;">Recent Feedback</h3>
+
+      <div class="table-container" id="recentFeedback"></div>
+
+    </div>
+
+    <div id="errorContainer" class="hidden"></div>
+
+  </div>
+  <script>
+
+    // ==================== COMMON FUNCTIONS ====================
+
+    async function checkLogin() {
+      try {
+        const response = await fetch('/api/check_session');
+        const data = await response.json();
+
+        if (!data.logged_in) {
+          localStorage.clear();
+          window.location.href = 'login.html';
+          return false;
+        }
+
+        if (!localStorage.getItem('artist_id')) {
+          localStorage.setItem('artist_id', data.artist_id);
+        }
+
+        return true;
+
+      } catch (error) {
+        localStorage.clear();
+        window.location.href = 'login.html';
+        return false;
+      }
+    }
+
+    function initSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const menuBtn = document.getElementById('menuBtn');
+
+      if (menuBtn && sidebar) {
+        menuBtn.onclick = () => {
+          sidebar.classList.toggle('collapsed');
+          localStorage.setItem(
+            'sidebarCollapsed',
+            sidebar.classList.contains('collapsed')
+          );
+        };
+
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          sidebar.classList.add('collapsed');
+        }
+      }
+    }
+
+    function initProfileDropdown() {
+      const userProfile = document.getElementById('userProfile');
+      const dropdown = document.getElementById('profileDropdown');
+
+      if (userProfile && dropdown) {
+        userProfile.addEventListener('click', function (e) {
+          e.stopPropagation();
+          dropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function () {
+          dropdown.classList.remove('show');
+        });
+      }
+    }
+
+    async function logout() {
+      try {
+        await fetch('/api/logout', { method: 'POST' });
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+
+    // ==================== DASHBOARD FUNCTIONS ====================
+
+    async function loadDashboard() {
+      try {
+        const response = await fetch('/api/dashboard');
+
+        if (response.status === 401) {
+          localStorage.clear();
+          window.location.href = 'login.html';
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to load dashboard');
+        }
+
+        document.getElementById('loadingSpinner').classList.add('hidden');
+        document.getElementById('dashboardContent').classList.remove('hidden');
+
+        const artist = data.artist;
+
+        document.getElementById('welcomeText').textContent =
+          `Welcome back, ${artist.first_name || 'Artist'}!`;
+
+        const initials =
+          ((artist.first_name || '')[0] || '') +
+          ((artist.last_name || '')[0] || '');
+
+        const sidebarLogo = document.getElementById('sidebarLogo');
+        if (sidebarLogo) {
+          sidebarLogo.innerHTML = '';
+          const brandLogo = document.createElement('img');
+          brandLogo.src = '/static/logo.png';
+          brandLogo.alt = 'CreoVibe';
+          brandLogo.style.width = '100%';
+          brandLogo.style.height = '100%';
+          brandLogo.style.objectFit = 'cover';
+          brandLogo.style.borderRadius = '50%';
+          brandLogo.onerror = () => { sidebarLogo.textContent = 'CV'; };
+          sidebarLogo.appendChild(brandLogo);
+        }
+        const navProfile = document.getElementById('navProfilePic');
+        if (navProfile) {
+          if (artist.profile_pic) {
+            navProfile.textContent = '';
+            navProfile.style.backgroundImage = `url('${artist.profile_pic}')`;
+            navProfile.style.backgroundSize = 'cover';
+            navProfile.style.backgroundPosition = 'center';
+            navProfile.style.color = 'transparent';
+          } else {
+            navProfile.style.backgroundImage = '';
+            navProfile.style.backgroundSize = '';
+            navProfile.style.backgroundPosition = '';
+            navProfile.style.color = '';
+            navProfile.textContent = (initials || 'CV').toUpperCase();
+          }
+        }
+
+        document.getElementById('totalBookings').textContent =
+          data.stats.total_bookings;
+
+        document.getElementById('totalEarnings').textContent =
+          '₹' + data.stats.earnings.toFixed(2);
+
+        if (data.recent_feedback && data.recent_feedback.length > 0) {
+          const avg =
+            data.recent_feedback.reduce((sum, fb) => sum + (Number(fb.Rating) || 0), 0)
+            / data.recent_feedback.length;
+          document.getElementById('avgRating').textContent =
+            avg.toFixed(1);
+        } else {
+          // No feedback yet — show 0.0 instead of N/A
+          const fallbackRating = (data.stats && data.stats.avg_rating)
+            ? Number(data.stats.avg_rating).toFixed(1)
+            : '0.0';
+          document.getElementById('avgRating').textContent = fallbackRating;
+        }
+
+        const tableBody = document.getElementById('upcomingTable');
+        tableBody.innerHTML = '';
+
+        if (data.upcoming_bookings && data.upcoming_bookings.length > 0) {
+
+          data.upcoming_bookings.forEach(booking => {
+            const row = document.createElement('tr');
+
+            // Format date as DD Mon YYYY
+            let dateDisplay = booking.Slot_Date || '';
+            if (dateDisplay) {
+              const d = new Date(dateDisplay + 'T00:00:00');
+              if (!isNaN(d.getTime())) {
+                dateDisplay = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+              }
+            }
+
+            // Format time as hh:mm AM/PM
+            let timeDisplay = booking.Start_Time || '';
+            if (timeDisplay && timeDisplay.includes(':')) {
+              try {
+                const [h, m] = timeDisplay.split(':');
+                const td = new Date(2000, 0, 1, parseInt(h), parseInt(m));
+                timeDisplay = td.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+              } catch (e) { }
+            }
+
+            const status = booking.Booking_Status || 'confirmed';
+            const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+
+            row.innerHTML = `
+                    <td>${dateDisplay}</td>
+                    <td>${booking.first_name || booking.First_Name || ''} ${booking.last_name || booking.Last_Name || ''}</td>
+                    <td>${timeDisplay}</td>
+                    <td><span class="badge badge-primary">${booking.Slot_Type}</span></td>
+                    <td><span class="badge badge-success">${statusLabel}</span></td>
+                `;
+
+            tableBody.appendChild(row);
+          });
+
+        } else {
+          tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:30px;color:#999;">
+                        No upcoming bookings
+                    </td>
+                </tr>
+            `;
+        }
+
+        const feedbackDiv = document.getElementById('recentFeedback');
+        feedbackDiv.innerHTML = '';
+
+        if (data.recent_feedback && data.recent_feedback.length > 0) {
+
+          data.recent_feedback.forEach(fb => {
+
+            const stars =
+              '★'.repeat(fb.Rating) +
+              '☆'.repeat(5 - fb.Rating);
+
+            const item = document.createElement('div');
+            item.style.cssText =
+              'padding:15px;border-bottom:1px solid #eee;';
+
+            item.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                        <strong>${fb.first_name || fb.First_Name || 'Client'} ${fb.last_name || fb.Last_Name || ''}</strong>
+                        <span style="color:#FFC107;">${stars}</span>
+                    </div>
+                    <p style="margin:0 0 8px 0;color:#555;">
+                        ${fb.Comments || 'No comment provided'}
+                    </p>
+                    <small style="color:#999;">
+                        ${new Date(fb.Created_At).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </small>
+                `;
+
+            feedbackDiv.appendChild(item);
+          });
+
+        } else {
+          feedbackDiv.innerHTML = `
+                <div style="text-align:center;padding:30px;color:#999;">
+                    No feedback yet
+                </div>
+            `;
+        }
+
+      } catch (error) {
+
+        console.error('Dashboard error:', error);
+
+        document.getElementById('loadingSpinner').classList.add('hidden');
+
+        const errorDiv = document.getElementById('errorContainer');
+        errorDiv.classList.remove('hidden');
+
+        errorDiv.innerHTML = `
+            <div class="error-box">
+                <h3><i class="ri-error-warning-line"></i> Error Loading Dashboard</h3>
+                <p>${error.message}</p>
+                <button onclick="location.reload()" 
+                        style="background:#667eea;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">
+                    <i class="ri-refresh-line"></i> Reload Page
+                </button>
+            </div>
+        `;
+      }
+    }
+
+    // ==================== EVENT LISTENERS ====================
+
+    function setupEventListeners() {
+      document.getElementById('logoutBtn').addEventListener('click', function (e) {
+        e.preventDefault();
+        logout();
+      });
+    }
+
+    // ==================== INITIALIZE ====================
+
+
+    async function loadNotificationCount() {
+        try {
+            const r = await fetch('/api/notifications/count');
+            if (!r.ok) return;
+            const d = await r.json();
+            const badge = document.getElementById('notifCountBadge');
+            if (!badge) return;
+            const count = d.unread || 0;
+            if (count > 0) {
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        } catch (e) { /* silent */ }
+    }
+    async function init() {
+      const isLoggedIn = await checkLogin();
+      if (!isLoggedIn) return;
+
+      initSidebar();
+      initProfileDropdown();
+      setupEventListeners();
+      loadDashboard();
+      loadNotificationCount();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+
+  </script>
+
+  <footer class="site-footer" id="siteFooter">
+    <div class="site-footer-inner">
+      <p><span class="footer-brand">CreoVibe</span> &mdash; Artist Booking Platform</p>
+      <p>&copy; 2026 CreoVibe. All rights reserved.</p>
+    </div>
+  </footer>
+  <style>
+    .site-footer {
+      margin-left: var(--sidebar-w, 260px);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: rgba(255, 255, 255, .90);
+      border-top: none;
+      transition: margin-left 0.25s ease;
+    }
+
+    .site-footer-inner {
+      padding: 16px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .site-footer p {
+      margin: 0;
+    }
+
+    .footer-brand {
+      font-family: "Monotype Corsiva", cursive;
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+  </style>
+  <script>
+    (function () {
+      var sb = document.getElementById('sidebar'), ft = document.getElementById('siteFooter');
+      if (sb && ft) {
+        new MutationObserver(function () {
+          ft.style.marginLeft = sb.classList.contains('collapsed') ? 'var(--sidebar-w-sm, 60px)' : 'var(--sidebar-w, 260px)';
+        }).observe(sb, { attributes: true, attributeFilter: ['class'] });
+      }
+    })();
+  </script>
+</body>
+
+</html>

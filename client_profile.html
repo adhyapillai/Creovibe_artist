@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Profile - CreoVibe</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #667eea;
+      --accent: #764ba2;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #F5F7FF;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e9edf5;
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    }
+
+    .title {
+      margin: 0 0 20px 0;
+      color: var(--primary);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 10px;
+      margin: 10px 0;
+      align-items: center;
+    }
+
+    .label {
+      color: #667;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .value {
+      color: #223;
+      font-size: 14px;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 18px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #eef1f7;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      color: #667;
+      font-weight: 600;
+      background: #f8f9fc;
+    }
+
+    .badge {
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .badge-confirmed {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .badge-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .badge-cancelled {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .badge-completed {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 1s linear infinite;
+      margin: 30px auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <a class="back" href="booking_details.html"><i class="ri-arrow-left-line"></i> Back to Bookings</a>
+
+    <div class="spinner" id="spinner"></div>
+
+    <div id="clientContent" class="hidden">
+      <div class="card">
+        <h2 class="title"><i class="ri-user-3-line"></i> Client Profile</h2>
+        <div class="row">
+          <div class="label">Name</div>
+          <div class="value" id="clientName">-</div>
+        </div>
+        <div class="row">
+          <div class="label">Phone</div>
+          <div class="value" id="clientPhone">-</div>
+        </div>
+        <div class="row">
+          <div class="label">Email</div>
+          <div class="value" id="clientEmail">-</div>
+        </div>
+        <div class="row">
+          <div class="label">Location</div>
+          <div class="value" id="clientLocation">-</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="title" style="font-size:18px;"><i class="ri-calendar-check-line"></i> Booking History</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Date</th>
+              <th>Slot Time</th>
+              <th>Slot Type</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr>
+              <td colspan="5" style="text-align:center;color:#999;padding:20px;">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function qp(name) {
+      return new URLSearchParams(window.location.search).get(name) || '';
+    }
+
+    function statusBadge(status) {
+      const s = (status || '').toLowerCase();
+      const map = { confirmed: 'badge-confirmed', pending: 'badge-pending', cancelled: 'badge-cancelled', completed: 'badge-completed' };
+      const cls = map[s] || '';
+      return `<span class="badge ${cls}">${status ? status.charAt(0).toUpperCase() + status.slice(1) : '-'}</span>`;
+    }
+
+    function formatDate(dt) {
+      if (!dt) return '-';
+      return new Date(dt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function formatTime(dt) {
+      if (!dt) return '-';
+      return new Date(dt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+
+    async function loadClientProfile() {
+      const bookingId = qp('booking_id');
+      const nameParam = decodeURIComponent(qp('name'));
+      const phoneParam = decodeURIComponent(qp('phone'));
+      const usernameParam = decodeURIComponent(qp('username'));
+
+      // Populate from query params immediately as fallback
+      document.getElementById('clientName').textContent = nameParam || 'N/A';
+      document.getElementById('clientPhone').textContent = phoneParam || 'N/A';
+      document.getElementById('clientEmail').textContent = usernameParam || 'N/A';
+
+      try {
+        // First, fetch all bookings to find the client_id
+        const bookingsResp = await fetch('/api/bookings');
+        let clientId = null;
+        let allBookings = [];
+        if (bookingsResp.ok) {
+          const bookingsData = await bookingsResp.json();
+          allBookings = bookingsData.bookings || [];
+
+          // Find the matching booking to get client_id
+          if (bookingId) {
+            const matchedBooking = allBookings.find(b => String(b.id) === String(bookingId) || String(b.booking_id) === String(bookingId));
+            if (matchedBooking) {
+              clientId = matchedBooking.client_id;
+            }
+          }
+        }
+
+        // Fetch client profile details with location
+        if (clientId) {
+          const profileResp = await fetch(`/api/client_profile?client_id=${clientId}`);
+          if (profileResp.ok) {
+            const profileData = await profileResp.json();
+            if (profileData.success && profileData.client) {
+              const c = profileData.client;
+              document.getElementById('clientName').textContent = `${c.first_name || ''} ${c.last_name || ''}`.trim() || 'N/A';
+              document.getElementById('clientPhone').textContent = c.phone_number || phoneParam || 'N/A';
+              document.getElementById('clientEmail').textContent = c.email || usernameParam || 'N/A';
+              document.getElementById('clientLocation').textContent = c.location || 'N/A';
+            }
+          }
+        }
+
+        // Filter bookings for this client
+        const bookings = allBookings.filter(b => {
+          if (clientId && b.client_id) return String(b.client_id) === String(clientId);
+          const bName = `${b.client_first_name || ''} ${b.client_last_name || ''}`.trim();
+          return nameParam && bName.toLowerCase() === nameParam.toLowerCase();
+        });
+
+        const tbody = document.getElementById('historyBody');
+        if (bookings.length > 0) {
+          tbody.innerHTML = bookings.map(b => `
+          <tr>
+            <td>#${b.id || b.booking_id || '-'}</td>
+            <td>${formatDate(b.date_time || b.slot_date)}</td>
+            <td>${formatTime(b.date_time || b.start_time)}</td>
+            <td>${b.slot_type || b.Slot_Type || '-'}</td>
+            <td>${statusBadge(b.status || b.Booking_Status)}</td>
+          </tr>
+        `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:20px;">No bookings found for this client.</td></tr>';
+        }
+      } catch (err) {
+        document.getElementById('historyBody').innerHTML =
+          '<tr><td colspan="5" style="text-align:center;color:#999;padding:20px;">Unable to load booking history.</td></tr>';
+      }
+
+      document.getElementById('spinner').classList.add('hidden');
+      document.getElementById('clientContent').classList.remove('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', loadClientProfile);
+  </script>
+</body>
+
+</html>

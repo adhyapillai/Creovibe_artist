@@ -1,0 +1,67 @@
+<nav class="sidebar" id="sidebar">
+
+    <h2>
+        <i class="ri-music-2-line"></i>
+        <span class="sidebar-brand-text">CreoVibe</span>
+    </h2>
+
+    <ul>
+        <li>
+            <a href="dashboard.html" class="active" data-page="dashboard">
+                <i class="ri-dashboard-line"></i> Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="profile.html" data-page="profile">
+                <i class="ri-user-line"></i> Profile
+            </a>
+        </li>
+        <li>
+            <a href="subscription.html" data-page="subscription">
+                <i class="ri-vip-crown-line"></i> Subscription
+            </a>
+        </li>
+        <li>
+            <a href="calendar_view.html" data-page="calendar_view">
+                <i class="ri-calendar-line"></i> Calendar
+            </a>
+        </li>
+        <li>
+            <a href="booking_details.html" data-page="booking_details">
+                <i class="ri-calendar-check-line"></i> Bookings
+            </a>
+        </li>
+        <li>
+            <a href="earnings.html" data-page="earnings">
+                <i class="ri-wallet-3-line"></i> Earnings
+            </a>
+        </li>
+        <li>
+            <a href="notifications.html" data-page="notifications">
+                <i class="ri-notification-3-line"></i> Notifications
+            </a>
+        </li>
+        <li>
+            <a href="feedback.html" data-page="feedback">
+                <i class="ri-chat-3-line"></i> Feedback
+            </a>
+        </li>
+        <li>
+            <a href="change_password.html" data-page="change_password">
+                <i class="ri-lock-password-line"></i> Change Password
+            </a>
+        </li>
+    </ul>
+
+</nav>
+
+<script>
+/* Auto-mark the active nav link based on current page filename */
+(function () {
+    var page = location.pathname.split('/').pop().replace('.html', '') || 'dashboard';
+    document.querySelectorAll('.sidebar a[data-page]').forEach(function (a) {
+        a.classList.remove('active');
+        if (a.dataset.page === page) a.classList.add('active');
+    });
+})();
+</script>

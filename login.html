@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login - CreoVibe</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #667eea;
+    --accent:  #764ba2;
+    --bg: #F5F7FF;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 420px;
+}
+
+.login-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+.logo-area {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-circle {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.logo-text {
+    font-family: "Monotype Corsiva", cursive;
+    font-size: 36px;
+    color: #667eea;
+    margin-bottom: 5px;
+}
+
+.tagline {
+    color: #666;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e1e4eb;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+}
+
+.links {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.links a {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+.divider {
+    text-align: center;
+    margin: 25px 0;
+    color: #999;
+    font-size: 14px;
+    position: relative;
+}
+
+.divider::before, .divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #eee;
+}
+
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+#errorMsg {
+    background: #ffe6e6;
+    color: #ff4757;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+#successMsg {
+    background: #d4ffd6;
+    color: #155724;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: none;
+}
+</style>
+</head>
+
+<body>
+<div class="login-container">
+    <div class="login-card">
+        <div class="logo-area">
+            <div class="logo-circle"></div>
+            <div class="logo-text">CreoVibe</div>
+            <div class="tagline">Artist Booking Portal</div>
+        </div>
+
+        <div id="errorMsg"></div>
+        <div id="successMsg"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+            </div>
+            
+            <button type="submit" class="btn-primary">
+                <i class="ri-login-box-line"></i> Login to Dashboard
+            </button>
+        </form>
+
+        <div class="links">
+            <a href="forgot_password.html">Forgot Password?</a>
+        </div>
+
+        <div class="divider">New to CreoVibe?</div>
+
+        <div class="text-center">
+            <a href="register.html" style="color: var(--primary); text-decoration: none; font-weight: 500;">
+                <i class="ri-user-add-line"></i> Register as Artist
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    const errorMsg = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+    
+    errorMsg.style.display = 'none';
+    successMsg.style.display = 'none';
+    
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            successMsg.textContent = 'Login successful! Redirecting...';
+            successMsg.style.display = 'block';
+            
+            // Store session info
+            localStorage.setItem('artist_id', data.artist_id);
+            localStorage.setItem('artist_name', data.name);
+            
+            // Redirect to dashboard
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1000);
+        } else {
+            errorMsg.textContent = data.error || 'Invalid credentials';
+            errorMsg.style.display = 'block';
+        }
+    } catch (error) {
+        errorMsg.textContent = 'Network error. Please try again.';
+        errorMsg.style.display = 'block';
+    }
+});
+
+// Check if already logged in
+window.addEventListener('DOMContentLoaded', function() {
+    const artistId = localStorage.getItem('artist_id');
+    if (artistId) {
+        window.location.href = 'dashboard.html';
+    }
+});
+</script>
+</body>
+</html>
